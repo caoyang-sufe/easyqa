@@ -30,3 +30,5 @@ MODEL_SUMMARY = {"albert-base-v1": {"path": os.path.join(MODEL_DIR, "common", "a
                  "LIAMF-USP/roberta-large-finetuned-race": {"path": os.path.join(MODEL_DIR, "LIAMF-USP/roberta-large-finetuned-race")},
                  "potsawee/longformer-large-4096-answering-race": {"path": os.path.join(MODEL_DIR, "potsawee/longformer-large-4096-answering-race")},
                  }
+
+LOG_DIR = "logging"

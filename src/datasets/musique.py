@@ -65,3 +65,6 @@ class MusiqueDataset(BaseDataset):
                 batch, current_batch_size = list(), 0
         if current_batch_size > 0:
             yield batch
+
+    def generate_model_inputs(cls, batch, tokenizer, **kwargs):
+        pass

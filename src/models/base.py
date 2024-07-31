@@ -11,6 +11,45 @@ class BaseModel(BaseClass):
 
     def __init__(self, **kwargs):
         super(BaseModel, self).__init__(**kwargs)
+        # Load model and tokenizer
+        self.model = self.load_model()
+        self.tokenizer = self.load_tokenizer()
+
+    def load_tokenizer(self):
+        tokenizer = self.Tokenizer.from_pretrained(self.model_path)
+        return tokenizer
+
+    def load_model(self):
+        model = self.Model.from_pretrained(self.model_path).to(self.device)
+        return model
+
+
+class BaseExtractiveModel(BaseModel):
+    Tokenizer = AutoTokenizer
+    Model = AutoModel
+
+    def __init__(self, **kwargs):
+        super(BaseExtractiveModel, self).__init__(**kwargs)
+        # Load model and tokenizer
+        self.model = self.load_model()
+        self.tokenizer = self.load_tokenizer()
+
+    def load_tokenizer(self):
+        tokenizer = self.Tokenizer.from_pretrained(self.model_path)
+        return tokenizer
+
+    def load_model(self):
+        model = self.Model.from_pretrained(self.model_path).to(self.device)
+        return model
+
+
+class BaseGenerativeModel(BaseModel):
+    Tokenizer = AutoTokenizer
+    Model = AutoModel
+
+    def __init__(self, **kwargs):
+        super(BaseExtractiveModel, self).__init__(**kwargs)
+        # Load model and tokenizer
         self.model = self.load_model()
         self.tokenizer = self.load_tokenizer()
 

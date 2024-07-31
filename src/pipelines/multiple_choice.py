@@ -22,6 +22,26 @@ class MultipleChoicePipeline(BasePipeline):
     def __init__(self):
         super(MultipleChoicePipeline, self).__init__()
 
+    def run(self,
+            Model,
+            Dataset,
+            data_path,
+            model_path,
+            device,
+            batch_size,
+            max_length,
+            **kwargs,
+            ):
+        dataset = Dataset(data_path)
+        model = Model(model_path, device)
+        for batch in dataset.yield_batch(batch_size,
+                                         types = ["train"],
+                                         difficulties = ["high"],
+                                         ):
+            batch_logits, batch_predicts = model.run(batch = batch, max_length = max_length)
+            print(batch_logits, batch_predicts)
+
+
     def run_race(self,
                  Model,
                  data_path,
@@ -53,3 +73,8 @@ class MultipleChoicePipeline(BasePipeline):
                                          ):
             batch_logits, batch_predicts = model.run(batch = batch, max_length = max_length)
             print(batch_logits, batch_predicts)
+
+
+    def train_race(self):
+
+        pass

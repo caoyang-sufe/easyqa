@@ -9,6 +9,8 @@ from transformers import (pipeline,
 from src.datasets import SquadDataset
 from src.models.base import BaseModel
 
+
+
 class RobertaBaseSquad2(BaseModel):
     # https://huggingface.co/deepset/roberta-base-squad2
     Tokenizer = AutoTokenizer
@@ -37,3 +39,37 @@ class RobertaBaseSquad2(BaseModel):
         batch_results = question_answering_pipeline(inputs)
         gc.collect()
         return batch_results
+
+
+class RobertaBasePFHotpotQA(BaseModel):
+    # https://huggingface.co/AdapterHub/roberta-base-pf-hotpotqa
+    # https://huggingface.co/roberta-base
+    Tokenizer = AutoTokenizer
+    Model = AutoModelForQuestionAnswering
+    model_name = "deepset/roberta-base-squad2"
+
+    def run(self, batch):
+        return self.run_roberta_base_pf_hotpotqa()
+
+
+    def run_roberta_base_pf_hotpotqa(self):
+        tokenizer = AutoTokenizer.from_pretrained(r"D:\resource\model\huggingface\common\roberta-base")
+
+        articles = "Ben's father is David, they are good friends."
+        questions = "Who is Ben's father?"
+
+        inputs_1 = tokenizer(articles + questions,
+                             max_length=512,
+                             padding='longest',
+                             truncation=True,
+                             return_tensors='pt',
+                             )  # (4, max_length)
+
+        inputs_2 = tokenizer(articles,
+                             questions,
+                             max_length=512,
+                             padding='longest',
+                             truncation=True,
+                             return_tensors='pt',
+                             )  # (4, max_length)
+

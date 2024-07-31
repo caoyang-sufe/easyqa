@@ -8,7 +8,7 @@ import json
 from src.datasets.base import BaseDataset
 
 
-class HotpotqaDataset(BaseDataset):
+class TriviaqaDataset(BaseDataset):
     pipeline_type = "mutiple-choice"
     def __init__(self,
                  data_path,

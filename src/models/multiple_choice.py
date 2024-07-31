@@ -24,23 +24,12 @@ class RobertaLargeFinetunedRace(BaseModel):
     # @return batch_logits: FloatTensor(batch_size, 4)
     # @return batch_predicts: List[Str] (batch_size, )
     def run(self, batch, max_length=512):
-        return self.run_roberta_large_finetuned_race(batch, self.tokenizer, self.model, max_length)
-
-    # @param batch: Dict[article(List[Str]), question(List[Str]), options(List[List[Str]])]
-    # @return batch_logits: FloatTensor(batch_size, 4)
-    # @return batch_predicts: List[Str] (batch_size, )
-    def run_roberta_large_finetuned_race(self,
-                                         batch,
-                                         tokenizer,
-                                         model,
-                                         max_length=512,
-                                         ):
         model_inputs = RaceDataset.generate_model_inputs(batch=batch,
-                                                         tokenizer=tokenizer,
+                                                         tokenizer=self.tokenizer,
                                                          model_name=self.model_name,
                                                          max_length=max_length,
                                                          )
-        batch_logits = model(**model_inputs).logits
+        batch_logits = self.model(**model_inputs).logits
         del model_inputs
         batch_predicts = ["ABCD"[torch.argmax(logits).item()] for logits in batch_logits]
         return batch_logits, batch_predicts

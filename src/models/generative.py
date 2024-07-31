@@ -14,7 +14,7 @@ from transformers import (pipeline,
 from src.datasets import SquadDataset
 from src.models.base import BaseModel
 
-class ChatGLM6BTest(BaseTest):
+class ChatGLM6B(BaseModel):
     # https://huggingface.co/THUDM/chatglm-6b
     # https://huggingface.co/THUDM/chatglm-6b-int4
     # https://huggingface.co/THUDM/chatglm-6b-int4-qe
@@ -35,3 +35,4 @@ class ChatGLM6BTest(BaseTest):
     # @return history	: Chat history
     def run(self, data, history=list()):
         return run_chatglm_6b(data, self.tokenizer, self.model, history)
+
