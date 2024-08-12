@@ -6,5 +6,4 @@ import argparse
 
 class BaseConfig:
     parser = argparse.ArgumentParser("--")
-    parser.add_argument("--device", default="cuda", type=str, help="Which device to run on?")
-    parser.add_argument("--", default="")
+    parser.add_argument("--device", default="cuda", type=str, help="Device to run on")

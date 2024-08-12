@@ -29,7 +29,7 @@ class RaceDataset(BaseDataset):
     # @return "answer": 2
     def yield_batch(self,
                     batch_size,
-                    types,
+                    types,.
                     difficulties,
                     ):
         batch, current_batch_size = list(), 0

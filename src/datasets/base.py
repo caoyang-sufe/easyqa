@@ -9,6 +9,7 @@ class BaseDataset(BaseClass):
     def __init__(self, **kwargs):
         super(BaseDataset, self).__init__(**kwargs)
 
+	# Generator to yield batch data
     def yield_batch(self, **kwargs):
         raise NotImplementedError()
 

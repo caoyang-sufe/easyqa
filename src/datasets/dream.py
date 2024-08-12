@@ -17,7 +17,7 @@ class DreamDataset(BaseDataset):
         self.data_path = data_path
 
     # @param batch_size: Int
-    # @param types: List[Str] of "run_race", "dev", "test"
+    # @param types: List[Str] of "train", "dev", "test"
     # @yield batch: List[Dict]
     # - "article_id": "4-199"
     # - "question_id": 0
