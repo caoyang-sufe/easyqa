@@ -16,12 +16,16 @@ class BasePipeline(BaseClass):
     def __init__(self, **kwargs):
         super(BasePipeline, self).__init__(**kwargs)
 
+	# Training pipeline
     def train_baseline(self,
+					   model,
+					    s
                        args,
                        baseline_class,
                        data_name,
                        model_name,
                        ckpt_path=None,
+                       **kwargs
                        ):
         # Global variables
         time_string = time.strftime("%Y-%m-%d-%H-%M-%S")
@@ -82,7 +86,6 @@ class BasePipeline(BaseClass):
                 train_log["loss"].append(loss)
                 train_log["accuracy"].append(train_accuracy)
             step_lr_scheduler.step()
-
             # Save checkpoint
             if (epoch + 1) % args.ckpt_cycle == 0:
                 checkpoint = {"model"	: model.state_dict(),
@@ -93,7 +96,6 @@ class BasePipeline(BaseClass):
                               "dev_log"		: dev_log,
                               }
                 torch.save(checkpoint, os.path.join(CKPT_DIR, f"dev-{data_name}-{model_name}-{time_string}-{epoch}.ckpt"))
-
             # Evaluate
             model.eval()
             with torch.no_grad():

@@ -1,5 +1,7 @@
 *.pyc
+.idea/
 data/
 logging/
 temp/
-__pycache__/
+__pycache__
+venv/

@@ -60,3 +60,6 @@ class BaseGenerativeModel(BaseModel):
     def load_model(self):
         model = self.Model.from_pretrained(self.model_path).to(self.device)
         return model
+
+
+class BaseMultipleChoiceModel
