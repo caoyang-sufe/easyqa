@@ -26,7 +26,7 @@ class RaceDataset(BaseMultipleChoiceDataset):
 	# @param batch_size: Int
 	# @param types: List[Str] of "train", "dev", "test"
 	# @param difficulties: List[Str] of "high", "middle"
-	# @yield batch: Dict-like
+	# @yield batch: List[Dict]
 	# @return "article_id": "high1.txt"
 	# @return "question_id": 0
 	# @return "article": "My husband is a born shopper. He ..."
@@ -149,12 +149,12 @@ class DreamDataset(BaseMultipleChoiceDataset):
 	# @param batch_size: Int
 	# @param types: List[Str] of "train", "dev", "test"
 	# @yield batch: List[Dict]
-	# - "article_id": "4-199"
+	# - "article_id": "5-510"
 	# - "question_id": 0
-	# - "article": "My husband is a born shopper. He ..."
-	# - "question": "The husband likes shopping because   _  ."
-	# - "options": ["he has much money.", "he likes the shops.", "he likes to compare the prices between the same items.", "he has nothing to do but shopping."]
-	# - "answer": 2
+	# - "article": ""M: I am considering dropping my dancing class ..."
+	# - "question": "What does the man suggest the woman do?"
+	# - "options": ["Consult her dancing teacher.", "Take a more interesting class.", "Continue her dancing class."]
+	# - "answer": 0
 	def yield_batch(self,
 					batch_size,
 					types,
@@ -164,17 +164,17 @@ class DreamDataset(BaseMultipleChoiceDataset):
 			with open(os.path.join(self.data_dir, f"{type_}.json"), 'r', encoding="utf8") as f:
 				data = json.load(f)
 			for (article_sentences, questions, article_id) in data:
-				article = '\n'.join(article_sentences)
+				article = '\n'.join(article_sentences)	# Conversation-like article is split by '\n', simply concatenate them
 				for question_id, question_data in enumerate(questions):
 					question = question_data["question"]
 					choice = question_data["choice"]
 					flag = False
-					for i, option in enumerate(choice):
+					for index, option in enumerate(choice):
 						if option == question_data["answer"]:
-							assert not flag, f"There are two same options in question {id_}"
-							answer = i
+							assert not flag, f"Two same options in question {id_}"
+							answer = index
 							flag = True
-					assert flag, f"There is no option matching answer in question {id_}"
+					assert flag, f"No option matching answer in question {id_}"
 					batch.append({"article_id": article_id,
 								  "question_id": question_id,
 								  "article": article,
