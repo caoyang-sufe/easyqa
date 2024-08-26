@@ -22,6 +22,8 @@ class MultipleChoicePipeline(BasePipeline):
     def __init__(self):
         super(MultipleChoicePipeline, self).__init__()
 
+	# @param Model: Class of src.models.multiple_choice
+	# @param Model: 
     def run(self,
             Model,
             Dataset,

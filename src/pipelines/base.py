@@ -22,32 +22,35 @@ class BasePipeline(BaseClass):
 	# Traditional training pipeline
 	# @params args: Object of <config.EasytrainConfig>
 	# @param model: Loaded model of torch.nn.Module
+	# @param train_dataloader: torch.data
+	# @param dev_dataloader:
 	# @param ckpt_epoch:
 	# @param ckpt_path: 
 	def easy_train_pipeline(self,
 							args
 							model,
+							train_dataloader,
+							dev_dataloader,
 							ckpt_epoch = 1,
 							ckpt_path = None,
 							**kwargs,
 							):
-		# Global variables
+		# 1 Global variables
 		time_string = time.strftime("%Y%m%d%H%M%S")
 		log_name = easy_train_pipeline.__name__
 
-		# Define paths
+		# 2 Define paths
 		train_record_path = os.path.join(LOG_DIR, f"{log_name}_{time_string}_train_record.txt")
 		dev_record_path = os.path.join(LOG_DIR, f"{log_name}_{time_string}_dev_record.txt")
 		log_path = os.path.join(LOG_DIR, f"{log_name}_{time_string}.log")
 		config_path = os.path.join(LOG_DIR, f"{log_name}_{time_string}.cfg")
 
-		# Save arguments
+		# 3 Save arguments
 		save_args(args, save_path=config_path)
 		logger = initialize_logger(filename=log_path, mode='w')
 		logger.info(f"Arguments: {vars(args)}")
 
-
-		# Load checkpoint
+		# 4 Load checkpoint
 		logger.info(f"Using {args.device}")
 		logger.info(f"Cuda Available: {torch.cuda.is_available()}")
 		logger.info(f"Available devices: {torch.cuda.device_count()}")
@@ -63,17 +66,17 @@ class BasePipeline(BaseClass):
 			model.load_state_dict(checkpoint["model"])
 			optimizer.load_state_dict(checkpoint["optimizer"])
 			step_lr_scheduler.load_state_dict(checkpoint["scheduler"])
-			current_epoch = checkpoint["epoch"] + 1
+			current_epoch = checkpoint["epoch"] + 1	# plus one to next epoch
 			train_record = checkpoint["train_record"]
 			dev_record = checkpoint["dev_record"]
 			logger.info("  - ok!")
 		logger.info(f"Start from epoch {current_epoch}")
-
-		# Run epochs
+		
+		# 5 Run epochs
 		for epoch in range(current_epoch, args.n_epochs):
-			# Train model
+			## 5.1 Train model
 			model.train()
-			# train_dataloader = ...
+			train_dataloader.reset()	# Reset dev dataloader
 			for iteration, train_batch_data in enumerate(train_dataloader):
 				loss, train_accuracy = model(train_batch_data, mode="train")
 				optimizer.zero_grad()
@@ -85,23 +88,23 @@ class BasePipeline(BaseClass):
 				train_record["loss"].append(loss)
 				train_record["accuracy"].append(train_accuracy)
 			step_lr_scheduler.step()
-			# Save checkpoint
+			## 5.2 Save checkpoint
 			if (epoch + 1) % ckpt_epoch == 0:
-				checkpoint = {"model"		: model.state_dict(),
-							  "optimizer"	: optimizer.state_dict(),
-							  "scheduler"	: step_lr_scheduler.state_dict(),
-							  "epoch"		: epoch,
-							  "train_record"	: train_record,
-							  "dev_record"		: dev_record,
+				checkpoint = {"model": model.state_dict(),
+							  "optimizer": optimizer.state_dict(),
+							  "scheduler": step_lr_scheduler.state_dict(),
+							  "epoch": epoch,
+							  "train_record": train_record,
+							  "dev_record": dev_record,
 							  }
 				torch.save(checkpoint, os.path.join(CKPT_DIR, f"dev-{data_name}-{model_name}-{time_string}-{epoch}.ckpt"))
-			# Evaluate model
+			## 5.3 Evaluate model
 			model.eval()
 			with torch.no_grad():
 				correct = 0
 				total = 0
-				# dev_dataloader = ...
-				for i, dev_batch_data in enumerate(dev_dataloader):
+				dev_dataloader.reset()	# Reset dev dataloader
+				for iteration, dev_batch_data in enumerate(dev_dataloader):
 					correct_size, batch_size = model(dev_batch_data, mode="dev")
 					correct += correct_size
 					total += batch_size

@@ -11,4 +11,3 @@ class RetrievalPipeline():
 
         pass
 
-    def

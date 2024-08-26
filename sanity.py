@@ -5,6 +5,7 @@
 import os
 from src.datasets import RaceDataset, DreamDataset, SquadDataset, HotpotqaDataset, MusiqueDataset
 
+
 def test_datasets():
 	data_dir = r"D:\data"
 	data_path_dream = os.path.join(data_dir, "dream")
