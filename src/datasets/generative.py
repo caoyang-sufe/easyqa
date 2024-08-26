@@ -5,21 +5,20 @@
 import os
 import json
 
-from src.datasets.base import BaseExtractiveDatasetDataset
+from src.datasets.base import BaseGenerativeDataset
 
-class TriviaqaDataset(BaseDataset):
-    pipeline_type = "mutiple-choice"
-    def __init__(self,
-                 data_path,
-                 ):
-        super(HotpotqaDataset, self).__init__()
-        self.data_path = data_path
+class TriviaqaDataset(BaseGenerativeDataset):
+	
+	def __init__(self,
+				 data_dir,
+				 ):
+		super(TriviaqaDataset, self).__init__(data_dir)
 
-    # @param batch_size: Int
-    # @param filename: 
-    # @yield batch:
-    def yield_batch(self,
-                    batch_size,
-                    filename,
-                    ):
+	# @param batch_size: Int
+	# @param filename: 
+	# @yield batch:
+	def yield_batch(self,
+					batch_size,
+					filename,
+					):
 		pass

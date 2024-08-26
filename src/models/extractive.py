@@ -9,10 +9,7 @@ from transformers import (pipeline,
 from src.datasets import SquadDataset
 from src.models.base import BaseModel
 
-
-class 
-
-
+ 
 class RobertaBaseSquad2(BaseModel):
     # https://huggingface.co/deepset/roberta-base-squad2
     Tokenizer = AutoTokenizer

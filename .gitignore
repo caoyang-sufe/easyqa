@@ -1,7 +1,8 @@
 *.pyc
+*.log
 .idea/
 data/
-logging/
+log/
 temp/
 __pycache__
 venv/

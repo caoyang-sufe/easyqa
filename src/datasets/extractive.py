@@ -9,17 +9,20 @@ from src.datasets.base import BaseExtractiveDataset
 
 
 class SquadDataset(BaseExtractiveDataset):
-	
+	checked_data_dirs = ["./squad1.1/train-v1.1",
+						 "./squad1.1/dev-v1.1.json",
+						 "./squad2.0/train-v2.0",
+						 ]
 	def __init__(self,
-				 data_path,
+				 data_dir,
 				 ):
-		super(SquadDataset, self).__init__()
-		self.data_path = data_path
+		super(SquadDataset, self).__init__(data_dir)
 
 	# @param batch_size: Int
-	# @param filename: Str, e.g. "run_race-v1.1.json", "run_race-v1.1.json", "run_race-v1.1.json"
+	# @param version: Str, e.g. "1.1", "2.0"
+	# @param type_: Str, e.g. "train", "dev"
 	# @yield batch: List[Dict]
-	# - article_id: "run_race-1.1-00000"
+	# - article_id: "train-1.1-00000"
 	# - question_id: "5733be284776f41900661182"
 	# - title: "University_of_Notre_Dame"
 	# - article: "Architecturally, the school has a Catholic character. Atop ..."
@@ -29,10 +32,11 @@ class SquadDataset(BaseExtractiveDataset):
 	# - answer_ends: [541]
 	def yield_batch(self,
 					batch_size,
-					filename,
+					version,
+					type_,
 					):
 		batch, current_batch_size, = list(), 0
-		with open(os.path.join(self.data_path, filename), 'r', encoding="utf8") as f:
+		with open(os.path.join(self.data_dir, f"squad{version}", f"{type_}-v{version}.json"), 'r', encoding="utf8") as f:
 			data = json.load(f)
 		count = -1
 		for sample in data["data"]:
@@ -40,7 +44,7 @@ class SquadDataset(BaseExtractiveDataset):
 			paragraphs = sample["paragraphs"]
 			for paragraph in paragraphs:
 				count += 1
-				article_id = f"{filename[: -5]}-{str(count).zfill(5)}"
+				article_id = f"{type_}-v{version}-{str(count).zfill(5)}"
 				article = paragraph["context"]
 				for qas in paragraph["qas"]:
 					question_id = qas["id"]
@@ -74,12 +78,15 @@ class SquadDataset(BaseExtractiveDataset):
 
 
 class HotpotqaDataset(BaseExtractiveDataset):
-	pipeline_type = "mutiple-choice"
+	checked_data_dirs = ["./hotpot_dev_distractor_v1.json",
+						 "./hotpot_dev_fullwiki_v1.json",
+						 "./hotpot_test_fullwiki_v1.json",
+						 "./hotpot_train_v1.1.json",
+						 ]
 	def __init__(self,
-				 data_path,
+				 data_dir,
 				 ):
-		super(HotpotqaDataset, self).__init__()
-		self.data_path = data_path
+		super(HotpotqaDataset, self).__init__(data_dir)
 
 	# @param batch_size: Int
 	# @param filename: Str, e.g. "train_v1.1.json", "dev_distractor_v1.json", "dev_fullwiki_v1.json", "test_fullwiki_v1.json"
@@ -96,7 +103,7 @@ class HotpotqaDataset(BaseExtractiveDataset):
 					filename,
 					):
 		batch, current_batch_size, = list(), 0
-		with open(os.path.join(self.data_path, filename), 'r', encoding="utf8") as f:
+		with open(os.path.join(self.data_dir, filename), 'r', encoding="utf8") as f:
 			data = json.load(f)
 		for sample in data:
 			id_ = sample["_id"]
@@ -182,15 +189,20 @@ class HotpotqaDataset(BaseExtractiveDataset):
 
 
 class MusiqueDataset(BaseExtractiveDataset):
-
+	checked_data_dirs = ["./musique_ans_v1.0_train.jsonl",
+						 "./musique_ans_v1.0_dev.jsonl",
+						 "./musique_ans_v1.0_test.jsonl",
+						 "./musique_full_v1.0_train.jsonl",
+						 "./musique_full_v1.0_dev.jsonl",
+						 "./musique_full_v1.0_test.jsonl",
+						 ]
 	def __init__(self,
-				 data_path,
+				 data_dir,
 				 ):
-		super(MusiqueDataset, self).__init__()
-		self.data_path = data_path
+		super(MusiqueDataset, self).__init__(data_dir)
 
 	# @param batch_size: Int
-	# @param type_: Str, e.g. "run_race", "dev", "test"
+	# @param type_: Str, e.g. "train", "dev", "test"
 	# @yield batch: List of `{"full": [json_full_1, json_full_2], "ans": json_ans}`, where `json_full_1, json_full_2, json_ans` have the same key-value pairs
 	# JSON structure in @yield batch is as below:
 	# - id: Str, e.g. "2hop__55254_176500"
@@ -214,8 +226,8 @@ class MusiqueDataset(BaseExtractiveDataset):
 						break
 					_jsonl.append(json.loads(_jsonl_string))
 			return _jsonl
-		file_path_full = os.path.join(self.data_path, f"musique_full_v1.0_{type_}.jsonl")
-		file_path_ans = os.path.join(self.data_path, f"musique_ans_v1.0_{type_}.jsonl")
+		file_path_full = os.path.join(self.data_dir, f"musique_full_v1.0_{type_}.jsonl")
+		file_path_ans = os.path.join(self.data_dir, f"musique_ans_v1.0_{type_}.jsonl")
 		jsonl_full = _easy_load_jsonl(file_path_full)
 		jsonl_ans = _easy_load_jsonl(file_path_ans)
 		sorted_jsonl_full = sorted(jsonl_full, key = lambda _json: _json["id"])

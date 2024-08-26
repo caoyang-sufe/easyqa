@@ -31,5 +31,5 @@ MODEL_SUMMARY = {"albert-base-v1": {"path": os.path.join(MODEL_DIR, "common", "a
                  "potsawee/longformer-large-4096-answering-race": {"path": os.path.join(MODEL_DIR, "potsawee/longformer-large-4096-answering-race")},
                  }
 
-LOG_DIR = "./logging"
+LOG_DIR = "./log"
 TEMP_DIR = "./temp"

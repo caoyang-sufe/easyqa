@@ -2,8 +2,6 @@
 # @author : caoyang
 # @email: caoyang@stu.sufe.edu.cn
 
-from src.datasets.race import RaceDataset
-from src.datasets.dream import DreamDataset
-from src.datasets.squad import SquadDataset
-from src.datasets.hotpotqa import HotpotqaDataset
-from src.datasets.musique import MusiqueDataset
+from src.datasets.extractive import SquadDataset, HotpotqaDataset, MusiqueDataset
+from src.datasets.generative import TriviaqaDataset
+from src.datasets.multiple_choice import RaceDataset, DreamDataset
