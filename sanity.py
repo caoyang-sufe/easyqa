@@ -4,19 +4,21 @@
 
 import os
 
-from settings import LOG_DIR
+from settings import DATA_DIR, LOG_DIR, MODEL_ROOT, DATA_SUMMARY, MODEL_SUMMARY
 
 from src.datasets import RaceDataset, DreamDataset, SquadDataset, HotpotqaDataset, MusiqueDataset
+from src.models import RobertaLargeFinetunedRace
 from src.tools.easy import initialize_logger, terminate_logger
 
-def test_datasets():
+def test_yield_batch():
 	# data_dir = r"D:\data"	# Lab PC
-	data_dir = r"D:\resource\data"	# Region
-	data_dir_dream = os.path.join(data_dir, "dream", "data")
-	data_dir_race = os.path.join(data_dir, "race")
-	data_dir_squad = os.path.join(data_dir, "squad")
-	data_dir_hotpotqa = os.path.join(data_dir, "hotpotqa")
-	data_dir_musique = os.path.join(data_dir, "musique", "data")
+	# data_dir = r"D:\resource\data"	# Region Laptop
+	data_dir = DATA_DIR	# default
+	data_dir_race = DATA_SUMMARY["RACE"]["path"]
+	data_dir_dream = DATA_SUMMARY["DREAM"]["path"]
+	data_dir_squad = DATA_SUMMARY["SQuAD"]["path"]
+	data_dir_hotpotqa = DATA_SUMMARY["HotpotQA"]["path"]
+	data_dir_musique = DATA_SUMMARY["Musique"]["path"]
 		
 	# RACE
 	def _test_race():
@@ -46,8 +48,11 @@ def test_datasets():
 	def _test_hotpotqa():
 		print(_test_hotpotqa.__name__)
 		dataset = HotpotqaDataset(data_dir=data_dir_hotpotqa)
-		filenames = ["hotpot_train_v1.1.json", "hotpot_dev_distractor_v1.json", "hotpot_dev_fullwiki_v1.json",
-					 "hotpot_test_fullwiki_v1.json"]
+		filenames = ["hotpot_train_v1.1.json",
+					 "hotpot_dev_distractor_v1.json",
+					 "hotpot_dev_fullwiki_v1.json",
+					 "hotpot_test_fullwiki_v1.json",
+					 ]
 		for filename in filenames:
 			for i, batch in enumerate(dataset.yield_batch(batch_size=2, filename=filename)):
 				if i > 5:
@@ -72,5 +77,23 @@ def test_datasets():
 	_test_musique()
 	terminate_logger(logger)
 
+
+def test_generate_model_inputs():
+	logger = initialize_logger(os.path.join(LOG_DIR, "sanity.log"), 'w')
+
+	data_dir = DATA_SUMMARY[RaceDataset.dataset_name]["path"]
+	model_path = MODEL_SUMMARY[RobertaLargeFinetunedRace.model_name]["path"]
+	dataset = RaceDataset(data_dir)
+	model = RobertaLargeFinetunedRace(model_path, device="cpu")
+
+	for batch in dataset.yield_batch(batch_size=2, types=["train", "dev"], difficulties=["high"]):
+		model_inputs = RaceDataset.generate_model_inputs(batch, model.tokenizer, model.model_name, max_length=32)
+		print(model_inputs)
+		input()
+
+	terminate_logger(logger)
+
+
 if __name__ == "__main__":
-	test_datasets()
+	# test_yield_batch()
+	test_generate_model_inputs()

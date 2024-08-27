@@ -35,4 +35,3 @@ class ChatGLM6B(BaseModel):
     # @return history	: Chat history
     def run(self, data, history=list()):
         return run_chatglm_6b(data, self.tokenizer, self.model, history)
-

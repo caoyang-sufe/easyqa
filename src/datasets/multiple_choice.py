@@ -10,6 +10,7 @@ from src.datasets.base import BaseMultipleChoiceDataset
 
 
 class RaceDataset(BaseMultipleChoiceDataset):
+	dataset_name = "RACE"
 	checked_data_dirs = ["./train/high/",
 						 "./train/middle/",
 						 "./dev/high/",
@@ -76,8 +77,9 @@ class RaceDataset(BaseMultipleChoiceDataset):
 			yield batch
 
 	# Generate inputs for different models
-	# @20240528: LIAMF-USP/roberta-large-finetuned-race
-	# @20240528: potsawee/longformer-large-4096-answering-race
+	# @param batch: @yield of function `yield_batch`
+	# @param tokenizer: Tokenizer object
+	# @param model_name: See `model_name` of Class defined in `src.models.multiple_choice`
 	@classmethod
 	def generate_model_inputs(cls,
 							  batch,
@@ -139,6 +141,7 @@ class RaceDataset(BaseMultipleChoiceDataset):
 
 
 class DreamDataset(BaseMultipleChoiceDataset):
+	dataset_name = "DREAM"
 	checked_data_dirs = ["./train.json", "./dev.json", "./test.json"]
 	def __init__(self,
 				 data_dir,
@@ -190,8 +193,9 @@ class DreamDataset(BaseMultipleChoiceDataset):
 			yield batch
 
 	# Generate inputs for different models
-	# @20240528: LIAMF-USP/roberta-large-finetuned-race
-	# @20240528: potsawee/longformer-large-4096-answering-race
+	# @param batch: @yield of function `yield_batch`
+	# @param tokenizer: Tokenizer object
+	# @param model_name: See `model_name` of Class defined in `src.models.multiple_choice`
 	@classmethod
 	def generate_model_inputs(cls,
 							  batch,

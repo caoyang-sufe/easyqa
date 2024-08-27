@@ -8,7 +8,8 @@ import json
 from src.datasets.base import BaseGenerativeDataset
 
 class TriviaqaDataset(BaseGenerativeDataset):
-	
+	dataset_name = "TriviaQA"
+	checked_data_dirs = ["./triviaqa-rc", "./triviaqa/unfiltered"]
 	def __init__(self,
 				 data_dir,
 				 ):

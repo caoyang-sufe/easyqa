@@ -9,6 +9,7 @@ from src.datasets.base import BaseExtractiveDataset
 
 
 class SquadDataset(BaseExtractiveDataset):
+	dataset_name = "SQuAD"
 	checked_data_dirs = ["./squad1.1/train-v1.1",
 						 "./squad1.1/dev-v1.1.json",
 						 "./squad2.0/train-v2.0",
@@ -78,6 +79,7 @@ class SquadDataset(BaseExtractiveDataset):
 
 
 class HotpotqaDataset(BaseExtractiveDataset):
+	dataset_name = "HotpotQA"
 	checked_data_dirs = ["./hotpot_dev_distractor_v1.json",
 						 "./hotpot_dev_fullwiki_v1.json",
 						 "./hotpot_test_fullwiki_v1.json",
@@ -189,6 +191,7 @@ class HotpotqaDataset(BaseExtractiveDataset):
 
 
 class MusiqueDataset(BaseExtractiveDataset):
+	dataset_name = "Musique"
 	checked_data_dirs = ["./musique_ans_v1.0_train.jsonl",
 						 "./musique_ans_v1.0_dev.jsonl",
 						 "./musique_ans_v1.0_test.jsonl",

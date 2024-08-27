@@ -114,11 +114,12 @@ class BasePipeline(BaseClass):
 			logger.info(f"Eval epoch {epoch} | correct: {correct} - total: {total} - acc: {dev_accuracy}")
 
 		# Export log
-		train_record_dataframe = pandas.DataFrame(train_record, columns=list(train_record.keys()))
 		# train_record_save_path = ...
 		# dev_record_save_path = ...
+		train_record_dataframe = pandas.DataFrame(train_record, columns=list(train_record.keys()))
 		train_record_dataframe.to_csv(train_record_save_path, header=True, index=False, sep='\t')
-		logger.info("Export train logging to ")
+		logger.info(f"Export train record to {train_record_save_path}")
 		dev_record_dataframe = pandas.DataFrame(dev_record, columns=list(dev_record.keys()))
 		dev_record_dataframe.to_csv(dev_record_save_path, header=True, index=False, sep='\t')
+		logger.info(f"Export dev record to {dev_record_save_path}")
 		terminate_logger(logger)

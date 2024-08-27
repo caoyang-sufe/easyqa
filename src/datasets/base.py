@@ -7,9 +7,8 @@ import logging
 from src.base import BaseClass
 
 class BaseDataset(BaseClass):
-
+	dataset_name = None
 	checked_data_dirs = []
-	
 	def __init__(self, data_dir, **kwargs):
 		super(BaseDataset, self).__init__(**kwargs)
 		self.data_dir = data_dir
@@ -37,19 +36,19 @@ class BaseDataset(BaseClass):
 		
 
 class BaseExtractiveDataset(BaseDataset):
-
+	dataset_name = "Extractive"
 	def __init__(self, data_dir, **kwargs):
 		super(BaseExtractiveDataset, self).__init__(data_dir, **kwargs)
 
 
 class BaseGenerativeDataset(BaseDataset):
-
+	dataset_name = "Generative"
 	def __init__(self, data_dir, **kwargs):
 		super(BaseGenerativeDataset, self).__init__(data_dir, **kwargs)
 
 
 class BaseMultipleChoiceDataset(BaseDataset):
-
+	dataset_name = "Multiple-choice"
 	batch_data_keys = ["article_id",
 					   "question_id",
 					   "article",
@@ -57,7 +56,6 @@ class BaseMultipleChoiceDataset(BaseDataset):
 					   "options",
 					   "answer",
 					   ]
-	
 	def __init__(self, data_dir, **kwargs):
 		super(BaseMultipleChoiceDataset, self).__init__(data_dir, **kwargs)
 
@@ -121,8 +119,8 @@ class BaseMultipleChoiceDataset(BaseDataset):
 			raise NotImplementedError(model_name)
 		return model_inputs
 
-	@classmethod
-	def check_batch(cls, batch):
-		for data in batch:
-			for key in batch_data_keys:
-				assert key in data
+	# Check data keys in yield batch
+	# @param batch: @yield of function `yield_batch`
+	def check_batch(self, batch):
+		for key in self.batch_data_keys:
+			assert key in data, f"{key} not found in yield batch"
