@@ -3,12 +3,14 @@
 # @email: caoyang@stu.sufe.edu.cn
 
 import os
+import torch
 import logging
 from src.base import BaseClass
 
 class BaseDataset(BaseClass):
 	dataset_name = None
 	checked_data_dirs = []
+	batch_data_keys = []
 	def __init__(self, data_dir, **kwargs):
 		super(BaseDataset, self).__init__(**kwargs)
 		self.data_dir = data_dir
@@ -33,34 +35,51 @@ class BaseDataset(BaseClass):
 					logging.warning(f"× {checked_data_dir}")
 		else:
 			logging.warning("- Nothing to check!")
-		
+
+	# Check data keys in yield batch
+	# @param batch: @yield of function `yield_batch`
+	def check_batch_data_keys(self, batch):
+		for key in self.batch_data_keys:
+			assert key in batch[0], f"{key} not found in yield batch"
+
 
 class BaseExtractiveDataset(BaseDataset):
 	dataset_name = "Extractive"
+	batch_data_keys = ["context",	# List[Tuple[Str, Str]], i.e. List of [title, article]
+					   "question",	# Str
+					   "answers",	# List[Str]
+					   "answer_starts",	# List[Int]
+					   "answer_ends",	# List[Int]
+					   ]
 	def __init__(self, data_dir, **kwargs):
 		super(BaseExtractiveDataset, self).__init__(data_dir, **kwargs)
 
 
 class BaseGenerativeDataset(BaseDataset):
 	dataset_name = "Generative"
+	batch_data_keys = ["context",	# List[Tuple[Str, Str]], i.e. List of [title, article]
+					   "question",	# Str
+					   "answers",	# List[Str]
+					   ]
 	def __init__(self, data_dir, **kwargs):
 		super(BaseGenerativeDataset, self).__init__(data_dir, **kwargs)
 
 
 class BaseMultipleChoiceDataset(BaseDataset):
 	dataset_name = "Multiple-choice"
-	batch_data_keys = ["article_id",
-					   "question_id",
-					   "article",
-					   "question",
-					   "options",
-					   "answer",
+	batch_data_keys = ["article",	# Str, usually
+					   "question",	# Str
+					   "options",	# List[Str]
+					   "answer",	# Int
 					   ]
 	def __init__(self, data_dir, **kwargs):
 		super(BaseMultipleChoiceDataset, self).__init__(data_dir, **kwargs)
 
-	# Generate model inputs for multiple-choice MRC models
-	# @param batch
+	# Generate inputs for different models
+	# @param batch: @yield of function `yield_batch`
+	# @param tokenizer: Tokenizer object
+	# @param model_name: See `model_name` of Class defined in `src.models.multiple_choice`
+	@classmethod
 	def generate_model_inputs(cls,
 							  batch,
 							  tokenizer,
@@ -118,9 +137,3 @@ class BaseMultipleChoiceDataset(BaseDataset):
 		else:
 			raise NotImplementedError(model_name)
 		return model_inputs
-
-	# Check data keys in yield batch
-	# @param batch: @yield of function `yield_batch`
-	def check_batch(self, batch):
-		for key in self.batch_data_keys:
-			assert key in data, f"{key} not found in yield batch"

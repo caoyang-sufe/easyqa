@@ -46,3 +46,5 @@ class BaseMultipleChoiceModel(BaseModel):
 	def __init__(self, model_path, device, **kwargs):
 		super(BaseMultipleChoiceModel, self).__init__(model_path, device, **kwargs)
 
+
+

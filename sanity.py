@@ -4,6 +4,8 @@
 
 import os
 
+import torch
+
 from settings import DATA_DIR, LOG_DIR, MODEL_ROOT, DATA_SUMMARY, MODEL_SUMMARY
 
 from src.datasets import RaceDataset, DreamDataset, SquadDataset, HotpotqaDataset, MusiqueDataset
@@ -61,39 +63,73 @@ def test_yield_batch():
 	# Musique
 	def _test_musique():
 		print(_test_musique.__name__)
+		batch_size = 2
 		dataset = MusiqueDataset(data_dir=data_dir_musique)
 		types = ["train", "dev", "test"]
+		categories = ["ans", "full"]
+		answerables = [True, False]
 		for type_ in types:
-			print(type_ + '#' * 64)
-			for i, batch in enumerate(dataset.yield_batch(batch_size=128, type_=type_)):
-				if i > 5:
-					break
-				print(batch)
+			for category in categories:
+				if category == "full":
+					for answerable in answerables:
+						print(f"======== {type_} - {category} - {answerable} ========")
+						for i, batch in enumerate(dataset.yield_batch(batch_size, type_, category, answerable)):
+							if i > 5:
+								break
+							print(batch)
+				else:
+					print(f"======== {type_} - {category} ========")
+					for i, batch in enumerate(dataset.yield_batch(batch_size, type_, category)):
+						if i > 5:
+							break
+						print(batch)					
+								
+
+	# Test		
 	logger = initialize_logger(os.path.join(LOG_DIR, "sanity.log"), 'w')
-	_test_race()
-	_test_dream()
-	_test_squad()
-	_test_hotpotqa()
+	# _test_race()
+	# _test_dream()
+	# _test_squad()
+	# _test_hotpotqa()
 	_test_musique()
 	terminate_logger(logger)
 
 
 def test_generate_model_inputs():
+	
+	def _test_race():
+		print(_test_race.__name__)
+		data_dir = DATA_SUMMARY[RaceDataset.dataset_name]["path"]
+		model_path = MODEL_SUMMARY[RobertaLargeFinetunedRace.model_name]["path"]
+		dataset = RaceDataset(data_dir)
+		model = RobertaLargeFinetunedRace(model_path, device="cpu")
+
+		for i, batch in enumerate(dataset.yield_batch(batch_size=2, types=["train", "dev"], difficulties=["high"])):
+			model_inputs = RaceDataset.generate_model_inputs(batch, model.tokenizer, model.model_name, max_length=32)
+			print(model_inputs)
+			print('-' * 64)
+			if i > 5:
+				break
+
+	def _test_dream():
+		print(_test_dream.__name__)
+		data_dir = DATA_SUMMARY[DreamDataset.dataset_name]["path"] 
+		model_path = MODEL_SUMMARY[RobertaLargeFinetunedRace.model_name]["path"]
+		dataset = DreamDataset(data_dir)
+		model = RobertaLargeFinetunedRace(model_path, device="cpu")
+		for i, batch in enumerate(dataset.yield_batch(batch_size=2, types=["train", "dev"])):
+			model_inputs = RaceDataset.generate_model_inputs(batch, model.tokenizer, model.model_name, max_length=32)
+			print(model_inputs)
+			print('-' * 64)
+			if i > 5:
+				break
+	
 	logger = initialize_logger(os.path.join(LOG_DIR, "sanity.log"), 'w')
-
-	data_dir = DATA_SUMMARY[RaceDataset.dataset_name]["path"]
-	model_path = MODEL_SUMMARY[RobertaLargeFinetunedRace.model_name]["path"]
-	dataset = RaceDataset(data_dir)
-	model = RobertaLargeFinetunedRace(model_path, device="cpu")
-
-	for batch in dataset.yield_batch(batch_size=2, types=["train", "dev"], difficulties=["high"]):
-		model_inputs = RaceDataset.generate_model_inputs(batch, model.tokenizer, model.model_name, max_length=32)
-		print(model_inputs)
-		input()
-
+	_test_race()
+	_test_dream()
 	terminate_logger(logger)
 
 
 if __name__ == "__main__":
-	# test_yield_batch()
-	test_generate_model_inputs()
+	test_yield_batch()
+	# test_generate_model_inputs()
