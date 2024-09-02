@@ -2,8 +2,24 @@
 # @author : caoyang
 # @email: caoyang@stu.sufe.edu.cn
 
-
-a = dict(a=1,b=2,c=3)
-
-for i, (k, v) in enumerate(a.items()):
-	print(i, k, v)
+def f():
+	# global question, context, answer
+	question = "..."
+	context = "..."
+	answer = "..."
+	columns = ["question", "context", "answer"]
+	dic = {c: eval(c) for c in columns}
+	print(dic)
+	
+def g():
+	# global question, context, answer
+	question = "..."
+	context = "..."
+	answer = "..."
+	columns = ["question", "context", "answer"]
+	dic = {}
+	for c in columns:
+		dic[c] = eval(c)
+	print(dic)
+	
+g()

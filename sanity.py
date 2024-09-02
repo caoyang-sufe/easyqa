@@ -3,12 +3,12 @@
 # @email: caoyang@stu.sufe.edu.cn
 
 import os
-
+import gc
 import torch
 
 from settings import DATA_DIR, LOG_DIR, MODEL_ROOT, DATA_SUMMARY, MODEL_SUMMARY
 
-from src.datasets import RaceDataset, DreamDataset, SquadDataset, HotpotqaDataset, MusiqueDataset
+from src.datasets import RaceDataset, DreamDataset, SquadDataset, HotpotqaDataset, MusiqueDataset, TriviaqaDataset
 from src.models import RobertaLargeFinetunedRace
 from src.tools.easy import initialize_logger, terminate_logger
 
@@ -21,6 +21,7 @@ def test_yield_batch():
 	data_dir_squad = DATA_SUMMARY["SQuAD"]["path"]
 	data_dir_hotpotqa = DATA_SUMMARY["HotpotQA"]["path"]
 	data_dir_musique = DATA_SUMMARY["Musique"]["path"]
+	data_dir_triviaqa = DATA_SUMMARY["TriviaQA"]["path"]
 		
 	# RACE
 	def _test_race():
@@ -82,16 +83,38 @@ def test_yield_batch():
 					for i, batch in enumerate(dataset.yield_batch(batch_size, type_, category)):
 						if i > 5:
 							break
-						print(batch)					
+						print(batch)				
 								
+	# TriviaQA
+	def _test_triviaqa():
+		print(_test_triviaqa.__name__)
+		batch_size = 2
+		dataset = TriviaqaDataset(data_dir=data_dir_triviaqa)
+		types = ["verified", "train", "dev", "test"]
+		categories = ["web", "wikipedia"]
+		for type_ in types:
+			for category in categories:
+				print(f"======== {type_} - {category} ========")
+				for i, batch in enumerate(dataset.yield_batch(batch_size, type_, category, False)):
+					if i > 5:
+						break
+					print(batch)	
+		gc.collect()
+		for type_ in ["train", "dev", "test"]:
+			print(f"======== {type_} - unfiltered ========")
+			for i, batch in enumerate(dataset.yield_batch(batch_size, type_, "web", True)):
+				if i > 5:
+					break
+				print(batch)
 
 	# Test		
 	logger = initialize_logger(os.path.join(LOG_DIR, "sanity.log"), 'w')
 	# _test_race()
 	# _test_dream()
 	# _test_squad()
-	# _test_hotpotqa()
-	_test_musique()
+	_test_hotpotqa()
+	# _test_musique()
+	# _test_triviaqa()
 	terminate_logger(logger)
 
 

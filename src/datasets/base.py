@@ -45,7 +45,7 @@ class BaseDataset(BaseClass):
 
 class BaseExtractiveDataset(BaseDataset):
 	dataset_name = "Extractive"
-	batch_data_keys = ["context",	# List[Tuple[Str, Str]], i.e. List of [title, article]
+	batch_data_keys = ["context",	# List[Tuple[Str, List[Str]]], i.e. List of [title, article[sentence]]
 					   "question",	# Str
 					   "answers",	# List[Str]
 					   "answer_starts",	# List[Int]
@@ -57,7 +57,7 @@ class BaseExtractiveDataset(BaseDataset):
 
 class BaseGenerativeDataset(BaseDataset):
 	dataset_name = "Generative"
-	batch_data_keys = ["context",	# List[Tuple[Str, Str]], i.e. List of [title, article]
+	batch_data_keys = ["context",	# List[Tuple[Str, List[Str]]], i.e. List of [title, article[sentence]]
 					   "question",	# Str
 					   "answers",	# List[Str]
 					   ]

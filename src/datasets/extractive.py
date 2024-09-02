@@ -23,7 +23,7 @@ class SquadDataset(BaseExtractiveDataset):
 	# @param version: Str, e.g. "1.1", "2.0"
 	# @param type_: Str, e.g. "train", "dev"
 	# @yield batch: List[Dict]
-	# - context: ["University_of_Notre_Dame", "Architecturally, the school has a Catholic character. Atop ..."]
+	# - context: ["University_of_Notre_Dame", ["Architecturally, the school has a Catholic character. Atop ..."]]
 	# - question: "To whom did the Virgin Mary allegedly appear in 1858 in Lourdes France?"
 	# - answers: ["Saint Bernadette Soubirous"]
 	# - answer_starts: [515]

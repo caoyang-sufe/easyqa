@@ -24,13 +24,13 @@ class HotpotqaDataset(BaseGenerativeDataset):
 	# @param batch_size: Int
 	# @param filename: Str, e.g. "train_v1.1.json", "dev_distractor_v1.json", "dev_fullwiki_v1.json", "test_fullwiki_v1.json"
 	# @yield batch: List[Dict]
-	# - context:  [["The Other Side of Love", ["\"The Other Side of Love\" is a song ..."]], [..., ...], ...]
-	# - question: "What position on the Billboard Top 100 did Alison Moyet's late summer hit achieve?"
-	# - answer: "Yes" (Nonexisted in test data)
-	# - question_id: "5adf9ba1554299025d62a2db"
-	# - supporting_facts: "192-2" (Nonexisted in test data)
-	# - type: "comparison" (Nonexisted in test data)
-	# - level: "hard" (Nonexisted in test data)
+	# - context: List[Str, List[Str]], e.g. [["The Other Side of Love", ["\"The Other Side of Love\" is a song ..."]], [..., ...], ...]
+	# - question: Str, e.g. "What position on the Billboard Top 100 did Alison Moyet's late summer hit achieve?"
+	# - answer: Str, e.g. "Yes" (Nonexisted in test data)
+	# - question_id: Str, e.g. "5adf9ba1554299025d62a2db"
+	# - supporting_facts: List[Tuple[Title(Str), SentNo(Int)]], e.g.  [['2014 S/S', 0], ['Winner (band)', 0]] (Nonexisted in test data)
+	# - type: Str, e.g. "comparison" (Nonexisted in test data)
+	# - level: Str, e.g. "hard" (Nonexisted in test data)
 	def yield_batch(self,
 					batch_size,
 					filename,
@@ -188,47 +188,61 @@ class TriviaqaDataset(BaseGenerativeDataset):
 					unfiltered = False,
 					):
 		# Load data
-		if type_ == "verified":
-			data_path = os.path.join(self.data_dir, f"verified-{category}-dev.json")
-		elif type_ == "test":
-			data_path = os.path.join(self.data_dir, f"{category}-test-without-answers.json")
-		elif type_ in ["train", "dev"]:
-			data_path = os.path.join(self.data_dir, f"{category}-{type_}.json")
+		if unfiltered:
+			if type_ in ["train", "dev"]:
+				data_path = os.path.join(self.data_dir, f"./triviaqa-unfiltered/unfiltered-{category}-{type_}.json")
+			elif type_ == "test":
+				data_path = os.path.join(self.data_dir, f"./triviaqa-unfiltered/unfiltered-{category}-test-without-answers.json")
+			else:
+				assert False, f"Unexpected keyword argument `type_`: {type_} for unfiltered TQA!"
 		else:
-			assert False, f"Unexpected keyword argument `type_`: {type_}"
+			if type_ == "verified":
+				data_path = os.path.join(self.data_dir, f"./qa/verified-{category}-dev.json")
+			elif type_ in ["train", "dev"]:
+				data_path = os.path.join(self.data_dir, f"./qa/{category}-{type_}.json")
+			elif type_ == "test":
+				data_path = os.path.join(self.data_dir, f"./qa/{category}-test-without-answers.json")
+			else:
+				assert False, f"Unexpected keyword argument `type_`: {type_}"
 		with open(data_path, 'r', encoding="utf8") as f:
 			data = json.load(f)["Data"]
 		batch, current_batch_size, = list(), 0
-		for datum in data:
-			entity_pages = datum["EntityPages"]
-			question = datum["Question"]
-			question_id = datum["QuestionId"]
-			question_source = datum["QuestionSource"]
+		for entry in data:
+			normalized_entry = self._normalize_entry(entry)
 
-			answer = datum.get("Answer")	# Nonexisted in test data
-			search_results = datum.get("SearchResults")	# Nonexisted in test data
-			question_part_of_verified_eval = datum.get("QuestionPartOfVerifiedEval")	# Nonexisted in test data
-			question_verified_eval_attempt = datum.get("QuestionVerifiedEvalAttempt")	# Nonexisted in test data
+			# Generate context by EntityPaages
+			context = list()
+			entity_title = normalized_entry["entity_title"]
+			entity_filename = normalized_entry["entity_filename"]
+			for title, filename in zip(entity_title, entity_filename):
+				file_path = os.path.join(self.data_dir, f"./evidence/{category}", filename)
+				with open(file_path, 'r', encoding="utf8") as f:
+					article = list(filter(None, f.read().splitlines()))
+				context.append([title, article])
 
+			# 2024-09-02 23:10:30
+			# TBD: Generate answers by Answer
+			answers = normalized_entry["answer_normalized_aliases"][:]
+			
 			batch.append({"context": context,
-						  "question": question,
-						  "answers": answer,
-						  "question_id": id_,
-						  "type": type_,
-						  "level": level,
-						  "supporting_facts": supporting_facts,
+						  "question": normalized_entry["question"],
+						  "answers": answers,
 						  })
 			current_batch_size += 1
 			if current_batch_size == batch_size:
-				self.check_batch_data_keys(batch)
+				# self.check_batch_data_keys(batch)
 				yield batch
 				batch, current_batch_size, = list(), 0
 		if current_batch_size > 0:
-			self.check_batch_data_keys(batch)
+			# self.check_batch_data_keys(batch)
 			yield batch
 
 	# Normalize a single entry of TriviaQA data
+	# @param entry: Dict, A single QA-sample in JSON format of TriviaQA
+	# @return normalized_entry: Dict, Normalized QA-sample in JSON format
 	def _normalize_entry(self, entry):
+		normalized_columns = ["question", "question_id", "question_source"]
+		# Extract raw data
 		entity_pages = entry["EntityPages"]
 		question = entry["Question"]
 		question_id = entry["QuestionId"]
@@ -237,13 +251,18 @@ class TriviaqaDataset(BaseGenerativeDataset):
 		search_results = entry.get("SearchResults")
 		question_part_of_verified_eval = entry.get("QuestionPartOfVerifiedEval")
 		question_verified_eval_attempt = entry.get("QuestionVerifiedEvalAttempt")
-
-		
+		# Normalize the different dictationary
 		answer_dict = self._normalize_dict_data(data=answer, prefix="answer")	# Normalize Answer
 		entity_pages_dict = self._normalize_list_of_dicts_data(data=entity_pages, prefix="entity_pages")	# Normalize EntityPages
 		search_results_dict = self._normalize_list_of_dicts_data(data=search_results, prefix="search_results")	# Normalize SearchResults
+		# Combine the normalized data
+		# normalized_entry = {column: eval(column) for column in normalized_columns}	# Error! Local variables (question, question_id, question_source) are not defined
+		normalized_entry = dict()
+		for column in normalized_columns:
+			normalized_entry[column] = eval(column)
+		normalized_entry = {**normalized_entry, **answer_dict, **entity_pages_dict, **search_results_dict}
+		return normalized_entry
 		
-
 	# Normalize Dict-like data, e.g. Answer
 	# @param data: Dict-like variable
 	# @param prefix: Normalize key name by adding prefix, i.e. "answer" for Answer
@@ -251,7 +270,8 @@ class TriviaqaDataset(BaseGenerativeDataset):
 	def _normalize_dict_data(self, data, prefix):
 		normalized_dict = dict()
 		if data is not None:
-			for key, value in enumerate(data.items()):
+			for key, value in data.items():
+				print(key, value)
 				normalized_key = f"{prefix}_{self._transform_camel_to_underscore(key)}"
 				normalized_dict[normalized_key] = value
 		return normalized_dict
@@ -271,6 +291,7 @@ class TriviaqaDataset(BaseGenerativeDataset):
 					else:
 						# Note that if i > 0, then it means that `datum` in `data` has different keys
 						normalized_dict[normalized_key] = [None] * i + [value]
+						logging.warning(f"New key occurs: {normalized_key}")
 		return normalized_dict
 
 	# Transform UpperCamelCase string to lower_case_with_underscores
