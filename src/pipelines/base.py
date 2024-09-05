@@ -123,3 +123,20 @@ class BasePipeline(BaseClass):
 		dev_record_dataframe.to_csv(dev_record_save_path, header=True, index=False, sep='\t')
 		logger.info(f"Export dev record to {dev_record_save_path}")
 		terminate_logger(logger)
+
+
+class BaseExtractivePipeline(BasePipeline):
+	
+	def __init__(self, **kwargs):
+		super(BaseExtractivePipeline, self).__init__(**kwargs)
+
+class BaseGeneratePipeline(BasePipeline):
+	
+	def __init__(self, **kwargs):
+		super(BaseGeneratePipeline, self).__init__(**kwargs)
+
+class BaseMultipleChoicePipeline(BasePipeline):
+	
+	def __init__(self, **kwargs):
+		super(BaseGeneratePipeline, self).__init__(**kwargs)
+

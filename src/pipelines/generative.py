@@ -13,7 +13,5 @@ from transformers import (pipeline,
                           LongformerTokenizer,
                           LongformerForMultipleChoice,
                           )
-from src.pipelines.base import BaseExtractivePipeline
+from src.pipelines.base import BasePipeline
 
-
-class SquadPipeline()

@@ -2,6 +2,7 @@
 # @author : caoyang
 # @email: caoyang@stu.sufe.edu.cn
 
+from src.datasets.base import BaseExtractiveDataset, BaseGenerativeDataset, BaseMultipleChoiceDataset
 from src.datasets.extractive import SquadDataset
 from src.datasets.generative import HotpotqaDataset, MusiqueDataset, TriviaqaDataset
 from src.datasets.multiple_choice import RaceDataset, DreamDataset

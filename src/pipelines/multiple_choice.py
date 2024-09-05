@@ -43,7 +43,6 @@ class MultipleChoicePipeline(BasePipeline):
             batch_logits, batch_predicts = model.run(batch = batch, max_length = max_length)
             print(batch_logits, batch_predicts)
 
-
     def run_race(self,
                  Model,
                  data_path,
@@ -75,8 +74,3 @@ class MultipleChoicePipeline(BasePipeline):
                                          ):
             batch_logits, batch_predicts = model.run(batch = batch, max_length = max_length)
             print(batch_logits, batch_predicts)
-
-
-    def train_race(self):
-
-        pass

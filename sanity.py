@@ -130,7 +130,10 @@ def test_generate_model_inputs():
 		for i, batch in enumerate(dataset.yield_batch(batch_size=2, types=["train", "dev"], difficulties=["high"])):
 			model_inputs = RaceDataset.generate_model_inputs(batch, model.tokenizer, model.model_name, max_length=32)
 			print(model_inputs)
-			print('-' * 64)
+			print('-' * 32)
+			model_inputs = model.generate_model_inputs(batch, max_length=32)
+			print(model_inputs)
+			print('#' * 32)
 			if i > 5:
 				break
 
@@ -141,18 +144,21 @@ def test_generate_model_inputs():
 		dataset = DreamDataset(data_dir)
 		model = RobertaLargeFinetunedRace(model_path, device="cpu")
 		for i, batch in enumerate(dataset.yield_batch(batch_size=2, types=["train", "dev"])):
-			model_inputs = RaceDataset.generate_model_inputs(batch, model.tokenizer, model.model_name, max_length=32)
+			model_inputs = DreamDataset.generate_model_inputs(batch, model.tokenizer, model.model_name, max_length=32)
 			print(model_inputs)
-			print('-' * 64)
+			print('-' * 32)
+			model_inputs = model.generate_model_inputs(batch, max_length=32)
+			print(model_inputs)
+			print('#' * 32)
 			if i > 5:
 				break
 	
 	logger = initialize_logger(os.path.join(LOG_DIR, "sanity.log"), 'w')
 	_test_race()
-	_test_dream()
+	# _test_dream()
 	terminate_logger(logger)
 
 
 if __name__ == "__main__":
-	test_yield_batch()
-	# test_generate_model_inputs()
+	# test_yield_batch()
+	test_generate_model_inputs()

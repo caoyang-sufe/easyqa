@@ -55,6 +55,7 @@ class BaseExtractiveDataset(BaseDataset):
 		super(BaseExtractiveDataset, self).__init__(data_dir, **kwargs)
 
 
+
 class BaseGenerativeDataset(BaseDataset):
 	dataset_name = "Generative"
 	batch_data_keys = ["context",	# List[Tuple[Str, List[Str]]], i.e. List of [title, article[sentence]]

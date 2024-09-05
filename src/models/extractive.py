@@ -25,11 +25,7 @@ class RobertaBaseSquad2(BaseModel):
 
 	# @param data			: Dict[article(List[Str]), question(List[Str])]
 	# @return batch_results	: List[Str] (batch_size, )
-	def run_roberta_base_squad2(self,
-								batch,
-								tokenizer,
-								model,
-								):
+	def run_roberta_base_squad2(self, batch):
 		question_answering_pipeline = pipeline("question-answering", model=model, tokenizer=tokenizer)
 		articles = data["articles"]
 		questions = data["questions"]

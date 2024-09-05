@@ -209,7 +209,6 @@ class TriviaqaDataset(BaseGenerativeDataset):
 		batch, current_batch_size, = list(), 0
 		for entry in data:
 			normalized_entry = self._normalize_entry(entry)
-
 			# Generate context by EntityPaages
 			context = list()
 			entity_title = normalized_entry["entity_title"]
@@ -219,11 +218,7 @@ class TriviaqaDataset(BaseGenerativeDataset):
 				with open(file_path, 'r', encoding="utf8") as f:
 					article = list(filter(None, f.read().splitlines()))
 				context.append([title, article])
-
-			# 2024-09-02 23:10:30
-			# TBD: Generate answers by Answer
-			answers = normalized_entry["answer_normalized_aliases"][:]
-			
+			answers = normalized_entry["answer_normalized_aliases"][:]	# Simply use `answer_normalized_aliases`
 			batch.append({"context": context,
 						  "question": normalized_entry["question"],
 						  "answers": answers,

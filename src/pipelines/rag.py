@@ -4,8 +4,8 @@
 
 
 
-class RetrievalPipeline():
-
+class RAGPipeline():
+	"""RAG pipeline"""
 
     def __init__(self):
 

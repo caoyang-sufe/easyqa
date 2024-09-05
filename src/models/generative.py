@@ -19,8 +19,9 @@ class ChatGLM6B(BaseModel):
     # https://huggingface.co/THUDM/chatglm-6b-int4
     # https://huggingface.co/THUDM/chatglm-6b-int4-qe
     # https://huggingface.co/THUDM/chatglm-6b-int8
-    # Note: The series of chatglm-6b-xxx models cannot run on CPU
-    # You can quantize with `model = model.quantize(4)` or `model = model.quantize(8)` for low GPU memory
+    # Note:
+    # - The list of models cannot run on CPU
+    # - You can quantize with `model = model.quantize(4)` or `model = model.quantize(8)` for low GPU memory
     def __init__(self, model_path, device="cuda"):
         super(ChatGLM6BTest, self).__init__(model_path, device)
 
