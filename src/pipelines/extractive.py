@@ -13,7 +13,15 @@ from transformers import (pipeline,
                           LongformerTokenizer,
                           LongformerForMultipleChoice,
                           )
-from src.pipelines.base import BaseExtractivePipeline
+from src.pipelines.base import ExtractivePipeline
 
 
-class SquadPipeline()
+class SquadPipeline(ExtractivePipeline):
+
+	def __init__(self, ):
+
+		pass
+
+
+	def inference(self, ):
+		pass

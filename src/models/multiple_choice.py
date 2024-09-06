@@ -8,10 +8,10 @@ from transformers import (RobertaTokenizer,
 						  LongformerTokenizer,
 						  LongformerForMultipleChoice,
 						  )
-from src.models.base import BaseModel, BaseMultipleChoiceModel
+from src.models.base import MultipleChoiceModel
 
 
-class RobertaLargeFinetunedRace(BaseMultipleChoiceModel):
+class RobertaLargeFinetunedRace(MultipleChoiceModel):
 	# https://huggingface.co/LIAMF-USP/roberta-large-finetuned-race
 	Tokenizer = RobertaTokenizer
 	Model = RobertaForMultipleChoice
@@ -21,8 +21,7 @@ class RobertaLargeFinetunedRace(BaseMultipleChoiceModel):
 		super(RobertaLargeFinetunedRace, self).__init__(model_path, device)
 
 
-
-class LongformerLarge4096AnsweringRace(BaseMultipleChoiceModel):
+class LongformerLarge4096AnsweringRace(MultipleChoiceModel):
 	# https://huggingface.co/potsawee/longformer-large-4096-answering-race
 	Tokenizer = LongformerTokenizer
 	Model = LongformerForMultipleChoice

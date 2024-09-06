@@ -7,9 +7,9 @@ import re
 import json
 import logging
 
-from src.datasets.base import BaseGenerativeDataset
+from src.datasets.base import GenerativeDataset
 
-class HotpotqaDataset(BaseGenerativeDataset):
+class HotpotqaDataset(GenerativeDataset):
 	dataset_name = "HotpotQA"
 	checked_data_dirs = ["./hotpot_dev_distractor_v1.json",
 						 "./hotpot_dev_fullwiki_v1.json",
@@ -63,8 +63,7 @@ class HotpotqaDataset(BaseGenerativeDataset):
 			self.check_batch_data_keys(batch)
 			yield batch
 
-
-class MusiqueDataset(BaseGenerativeDataset):
+class MusiqueDataset(GenerativeDataset):
 	dataset_name = "Musique"
 	checked_data_dirs = ["./musique_ans_v1.0_train.jsonl",
 						 "./musique_ans_v1.0_dev.jsonl",
@@ -154,8 +153,7 @@ class MusiqueDataset(BaseGenerativeDataset):
 			self.check_batch_data_keys(batch)
 			yield batch
  
-
-class TriviaqaDataset(BaseGenerativeDataset):
+class TriviaqaDataset(GenerativeDataset):
 	dataset_name = "TriviaQA"
 	checked_data_dirs = ["./qa/web-train.json",
 						 "./qa/web-dev.json",
@@ -209,7 +207,7 @@ class TriviaqaDataset(BaseGenerativeDataset):
 		batch, current_batch_size, = list(), 0
 		for entry in data:
 			normalized_entry = self._normalize_entry(entry)
-			# Generate context by EntityPaages
+			# Generate context by EntityPages
 			context = list()
 			entity_title = normalized_entry["entity_title"]
 			entity_filename = normalized_entry["entity_filename"]
@@ -291,5 +289,6 @@ class TriviaqaDataset(BaseGenerativeDataset):
 
 	# Transform UpperCamelCase string to lower_case_with_underscores
 	# @param string: String in UpperCamelCase format, e.g. QuestionPartOfVerifiedEval
+	# @return: String in lower_case_with_underscores format, e.g. question_part_of_verified_eval
 	def _transform_camel_to_underscore(self, string):
 		return string[0].lower() + re.sub("[A-Z]", lambda _match: f"_{_match.group().lower()}", string[1:])

@@ -14,8 +14,22 @@ from transformers import (pipeline,
                           LongformerForMultipleChoice,
                           )
 
-from src.pipelines.base import BasePipeline
+from src.pipelines.base import MultipleChoicePipeline
 from src.datasets import RaceDataset, DreamDataset
+from src.models import 
+
+
+class RacePipeline(MultipleChoicePipeline):
+
+	def __init__(self, **jwargs):
+		super(RacePipeline, self).__init__()
+
+	def run(self):
+
+		race_dataset = 
+		
+		
+
 
 class MultipleChoicePipeline(BasePipeline):
 

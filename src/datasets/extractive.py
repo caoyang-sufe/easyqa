@@ -5,10 +5,10 @@
 import os
 import json
 
-from src.datasets.base import BaseExtractiveDataset
+from src.datasets.base import ExtractiveDataset
 
 
-class SquadDataset(BaseExtractiveDataset):
+class SquadDataset(ExtractiveDataset):
 	dataset_name = "SQuAD"
 	checked_data_dirs = ["./squad1.1/train-v1.1",
 						 "./squad1.1/dev-v1.1.json",
@@ -20,8 +20,8 @@ class SquadDataset(BaseExtractiveDataset):
 		super(SquadDataset, self).__init__(data_dir)
 
 	# @param batch_size: Int
-	# @param version: Str, e.g. "1.1", "2.0"
 	# @param type_: Str, e.g. "train", "dev"
+	# @param version: Str, e.g. "1.1", "2.0"
 	# @yield batch: List[Dict]
 	# - context: ["University_of_Notre_Dame", ["Architecturally, the school has a Catholic character. Atop ..."]]
 	# - question: "To whom did the Virgin Mary allegedly appear in 1858 in Lourdes France?"
@@ -31,8 +31,8 @@ class SquadDataset(BaseExtractiveDataset):
 	# - question_id: "5733be284776f41900661182"
 	def yield_batch(self,
 					batch_size,
-					version,
 					type_,
+					version,
 					):
 		batch, current_batch_size, = list(), 0
 		with open(os.path.join(self.data_dir, f"squad{version}", f"{type_}-v{version}.json"), 'r', encoding="utf8") as f:

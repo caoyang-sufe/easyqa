@@ -9,7 +9,7 @@ import torch
 from settings import DATA_DIR, LOG_DIR, MODEL_ROOT, DATA_SUMMARY, MODEL_SUMMARY
 
 from src.datasets import RaceDataset, DreamDataset, SquadDataset, HotpotqaDataset, MusiqueDataset, TriviaqaDataset
-from src.models import RobertaLargeFinetunedRace
+from src.models import RobertaLargeFinetunedRace, LongformerLarge4096AnsweringRace, RobertaBaseSquad2
 from src.tools.easy import initialize_logger, terminate_logger
 
 def test_yield_batch():
@@ -43,7 +43,7 @@ def test_yield_batch():
 		types = ["train", "dev"]
 		for version in versions:
 			for type_ in types:
-				for i, batch in enumerate(dataset.yield_batch(batch_size=2, version=version, type_=type_)):
+				for i, batch in enumerate(dataset.yield_batch(batch_size=2, type_=type_, version=version)):
 					if i > 5:
 						break
 					print(batch)
@@ -112,7 +112,7 @@ def test_yield_batch():
 	# _test_race()
 	# _test_dream()
 	# _test_squad()
-	_test_hotpotqa()
+	# _test_hotpotqa()
 	# _test_musique()
 	# _test_triviaqa()
 	terminate_logger(logger)
@@ -124,8 +124,10 @@ def test_generate_model_inputs():
 		print(_test_race.__name__)
 		data_dir = DATA_SUMMARY[RaceDataset.dataset_name]["path"]
 		model_path = MODEL_SUMMARY[RobertaLargeFinetunedRace.model_name]["path"]
+		# model_path = MODEL_SUMMARY[LongformerLarge4096AnsweringRace.model_name]["path"]
 		dataset = RaceDataset(data_dir)
 		model = RobertaLargeFinetunedRace(model_path, device="cpu")
+		# model = LongformerLarge4096AnsweringRace(model_path, device="cpu")
 
 		for i, batch in enumerate(dataset.yield_batch(batch_size=2, types=["train", "dev"], difficulties=["high"])):
 			model_inputs = RaceDataset.generate_model_inputs(batch, model.tokenizer, model.model_name, max_length=32)
@@ -152,10 +154,28 @@ def test_generate_model_inputs():
 			print('#' * 32)
 			if i > 5:
 				break
+
+	def _test_squad():
+		print(_test_squad.__name__)
+		data_dir = DATA_SUMMARY[SquadDataset.dataset_name]["path"]
+		model_path = MODEL_SUMMARY[RobertaBaseSquad2.model_name]["path"]
+		dataset = SquadDataset(data_dir)
+		model = RobertaBaseSquad2(model_path, device="cpu")
+
+		for i, batch in enumerate(dataset.yield_batch(batch_size=2, type_="dev", version="1.1")):
+			model_inputs = SquadDataset.generate_model_inputs(batch, model.tokenizer, model.model_name, max_length=32)
+			print(model_inputs)
+			print('-' * 32)
+			model_inputs = model.generate_model_inputs(batch, max_length=32)
+			print(model_inputs)
+			print('#' * 32)
+			if i > 5:
+				break
 	
 	logger = initialize_logger(os.path.join(LOG_DIR, "sanity.log"), 'w')
-	_test_race()
+	# _test_race()
 	# _test_dream()
+	_test_squad()
 	terminate_logger(logger)
 
 

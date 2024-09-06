@@ -5,10 +5,10 @@
 import os
 import json
 
-from src.datasets.base import BaseMultipleChoiceDataset
+from src.datasets.base import MultipleChoiceDataset
 
 
-class RaceDataset(BaseMultipleChoiceDataset):
+class RaceDataset(MultipleChoiceDataset):
 	dataset_name = "RACE"
 	checked_data_dirs = ["./train/high/",
 						 "./train/middle/",
@@ -77,7 +77,7 @@ class RaceDataset(BaseMultipleChoiceDataset):
 			self.check_batch_data_keys(batch)
 			yield batch
 
-class DreamDataset(BaseMultipleChoiceDataset):
+class DreamDataset(MultipleChoiceDataset):
 	dataset_name = "DREAM"
 	checked_data_dirs = ["./train.json", "./dev.json", "./test.json"]
 	def __init__(self,

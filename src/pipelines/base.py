@@ -38,18 +38,15 @@ class BasePipeline(BaseClass):
 		# 1 Global variables
 		time_string = time.strftime("%Y%m%d%H%M%S")
 		log_name = easy_train_pipeline.__name__
-
 		# 2 Define paths
 		train_record_path = os.path.join(LOG_DIR, f"{log_name}_{time_string}_train_record.txt")
 		dev_record_path = os.path.join(LOG_DIR, f"{log_name}_{time_string}_dev_record.txt")
 		log_path = os.path.join(LOG_DIR, f"{log_name}_{time_string}.log")
 		config_path = os.path.join(LOG_DIR, f"{log_name}_{time_string}.cfg")
-
 		# 3 Save arguments
 		save_args(args, save_path=config_path)
 		logger = initialize_logger(filename=log_path, mode='w')
 		logger.info(f"Arguments: {vars(args)}")
-
 		# 4 Load checkpoint
 		logger.info(f"Using {args.device}")
 		logger.info(f"Cuda Available: {torch.cuda.is_available()}")
@@ -71,7 +68,6 @@ class BasePipeline(BaseClass):
 			dev_record = checkpoint["dev_record"]
 			logger.info("  - ok!")
 		logger.info(f"Start from epoch {current_epoch}")
-		
 		# 5 Run epochs
 		for epoch in range(current_epoch, args.n_epochs):
 			## 5.1 Train model
@@ -112,8 +108,7 @@ class BasePipeline(BaseClass):
 			dev_record["epoch"].append(epoch)
 			dev_record["accuracy"].append(dev_accuracy)
 			logger.info(f"Eval epoch {epoch} | correct: {correct} - total: {total} - acc: {dev_accuracy}")
-
-		# Export log
+		# 7 Export log
 		# train_record_save_path = ...
 		# dev_record_save_path = ...
 		train_record_dataframe = pandas.DataFrame(train_record, columns=list(train_record.keys()))
@@ -125,18 +120,19 @@ class BasePipeline(BaseClass):
 		terminate_logger(logger)
 
 
-class BaseExtractivePipeline(BasePipeline):
+class ExtractivePipeline(BasePipeline):
 	
 	def __init__(self, **kwargs):
-		super(BaseExtractivePipeline, self).__init__(**kwargs)
+		super(ExtractivePipeline, self).__init__(**kwargs)
 
-class BaseGeneratePipeline(BasePipeline):
+class GenerativePipeline(BasePipeline):
 	
 	def __init__(self, **kwargs):
-		super(BaseGeneratePipeline, self).__init__(**kwargs)
+		super(GenerativePipeline, self).__init__(**kwargs)
 
-class BaseMultipleChoicePipeline(BasePipeline):
+class MultipleChoicePipeline(BasePipeline):
 	
 	def __init__(self, **kwargs):
-		super(BaseGeneratePipeline, self).__init__(**kwargs)
+		super(MultipleChoicePipeline, self).__init__(**kwargs)
 
+		

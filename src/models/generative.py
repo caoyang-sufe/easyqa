@@ -2,19 +2,9 @@
 # @author : caoyang
 # @email: caoyang@stu.sufe.edu.cn
 
-from transformers import (pipeline,
-                          AutoTokenizer,
-                          AutoModel,
-                          AutoModelForQuestionAnswering,
-                          RobertaTokenizer,
-                          RobertaForMultipleChoice,
-                          LongformerTokenizer,
-                          LongformerForMultipleChoice,
-                          )
-from src.datasets import SquadDataset
 from src.models.base import BaseModel
 
-class ChatGLM6B(BaseModel):
+class ChatGLM6B(GenerativeModel):
     # https://huggingface.co/THUDM/chatglm-6b
     # https://huggingface.co/THUDM/chatglm-6b-int4
     # https://huggingface.co/THUDM/chatglm-6b-int4-qe
@@ -22,6 +12,8 @@ class ChatGLM6B(BaseModel):
     # Note:
     # - The list of models cannot run on CPU
     # - You can quantize with `model = model.quantize(4)` or `model = model.quantize(8)` for low GPU memory
+    # Tokenizer = AutoTokenizer
+    # Model = AutoModel
     def __init__(self, model_path, device="cuda"):
         super(ChatGLM6BTest, self).__init__(model_path, device)
 
@@ -36,3 +28,6 @@ class ChatGLM6B(BaseModel):
     # @return history	: Chat history
     def run(self, data, history=list()):
         return run_chatglm_6b(data, self.tokenizer, self.model, history)
+
+
+	def generate_model_inputs
