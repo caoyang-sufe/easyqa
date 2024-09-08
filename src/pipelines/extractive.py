@@ -18,10 +18,5 @@ from src.pipelines.base import ExtractivePipeline
 
 class SquadPipeline(ExtractivePipeline):
 
-	def __init__(self, ):
-
-		pass
-
-
-	def inference(self, ):
-		pass
+	def __init__(self, **kwargs):
+		super(SquadPipeline, self).__init__()

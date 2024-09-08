@@ -2,6 +2,7 @@
 # @author : caoyang
 # @email: caoyang@stu.sufe.edu.cn
 
-from src.pipelines.multiple_choice import MultipleChoicePipeline
-from src.pipelines.extractive import ExtractivePipeline
+from src.pipelines.extractive import SquadPipeline
+from src.pipelines.multiple_choice import RacePipeline, DreamPipeline
+
 

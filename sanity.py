@@ -10,6 +10,7 @@ from settings import DATA_DIR, LOG_DIR, MODEL_ROOT, DATA_SUMMARY, MODEL_SUMMARY
 
 from src.datasets import RaceDataset, DreamDataset, SquadDataset, HotpotqaDataset, MusiqueDataset, TriviaqaDataset
 from src.models import RobertaLargeFinetunedRace, LongformerLarge4096AnsweringRace, RobertaBaseSquad2
+from src.pipelines import RacePipeline, DreamPipeline, SquadPipeline
 from src.tools.easy import initialize_logger, terminate_logger
 
 def test_yield_batch():
@@ -179,6 +180,50 @@ def test_generate_model_inputs():
 	terminate_logger(logger)
 
 
+def test_inference_pipeline():
+
+	def _test_race():
+		race_pipeline = RacePipeline()
+		pipeline = race_pipeline.easy_inference_pipeline(
+			dataset_class_name = "RaceDataset",
+			model_class_name = "RobertaLargeFinetunedRace",
+			batch_size = 2,
+			dataset_kwargs = {"types": ["train"], "difficulties": ["high", "middle"]},
+			model_kwargs = {"max_length": 512},
+		)
+		
+	def _test_squad():
+		squad_pipeline = SquadPipeline()
+		pipeline = squad_pipeline.easy_inference_pipeline(
+			dataset_class_name = "SquadDataset",
+			model_class_name = "RobertaBaseSquad2",
+			batch_size = 2,
+			dataset_kwargs = {"type_": "train", "version": "2.0"},
+			model_kwargs = {"max_length": 512},
+		)
+
+	# logger = initialize_logger(os.path.join(LOG_DIR, "sanity.log"), 'w')
+	_test_race()
+	# _test_squad()
+	# terminate_logger(logger)
+
+
+def test_pipeline():
+
+	from transformers import pipeline, AutoTokenizer, AutoModelForQuestionAnswering
+	from settings import MODEL_SUMMARY
+	context = 'Beyoncé Giselle Knowles-Carter (/biːˈjɒnseɪ/ bee-YON-say) (born September 4, 1981) is an American singer, songwriter, record producer and actress. Born and raised in Houston, Texas, she performed in various singing and dancing competitions as a child, and rose to fame in the late 1990s as lead singer of R&B girl-group Destiny\'s Child. Managed by her father, Mathew Knowles, the group became one of the world\'s best-selling girl groups of all time. Their hiatus saw the release of Beyoncé\'s debut album, Dangerously in Love (2003), which established her as a solo artist worldwide, earned five Grammy Awards and featured the Billboard Hot 100 number-one singles "Crazy in Love" and "Baby Boy".'
+	question = 'When did Beyonce start becoming popular?'
+	model_path = MODEL_SUMMARY["deepset/roberta-base-squad2"]["path"]
+	tokenizer = AutoTokenizer.from_pretrained(model_path)
+	model = AutoModelForQuestionAnswering.from_pretrained(model_path)
+	inputs = dict(context = context, question = question)
+	pipe = pipeline("question-answering", model = model, tokenizer = tokenizer)
+	outputs = pipe(inputs)
+	print(outputs)
+
 if __name__ == "__main__":
 	# test_yield_batch()
-	test_generate_model_inputs()
+	# test_generate_model_inputs()
+	test_inference_pipeline()
+	# test_pipeline()

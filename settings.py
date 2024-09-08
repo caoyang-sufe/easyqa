@@ -30,9 +30,10 @@ MODEL_SUMMARY = {"albert-base-v1": {"path": os.path.join(MODEL_DIR, "common", "a
 				 "bert-large-uncased": {"path": os.path.join(MODEL_DIR, "common", "bert-large-uncased")},
 				 "roberta-base": {"path": os.path.join(MODEL_DIR, "common", "roberta-base")},
 				 "roberta-large": {"path": os.path.join(MODEL_DIR, "common", "roberta-large")},
-				 "deepset/roberta-base-squad2": {"path": os.path.join(MODEL_DIR, "deepset", "roberta-base-squad2")},
-				 "LIAMF-USP/roberta-large-finetuned-race": {"path": os.path.join(MODEL_DIR, "LIAMF-USP", "roberta-large-finetuned-race")},
-				 "potsawee/longformer-large-4096-answering-race": {"path": os.path.join(MODEL_DIR, "potsawee", "longformer-large-4096-answering-race")},
+				 "LIAMF-USP/roberta-large-finetuned-race": {"path": os.path.join(MODEL_DIR, "LIAMF-USP/roberta-large-finetuned-race")},
+				 "potsawee/longformer-large-4096-answering-race": {"path": os.path.join(MODEL_DIR, "potsawee/longformer-large-4096-answering-race")},
+				 "deepset/roberta-base-squad2": {"path": os.path.join(MODEL_DIR, "deepset/roberta-base-squad2")}, 
+				 "AdapterHub/roberta-base-pf-hotpotqa": {"path": os.path.join(MODEL_DIR, "AdapterHub/roberta-base-squad2")}, 
 				 }
 
 
@@ -40,3 +41,4 @@ MODEL_SUMMARY = {"albert-base-v1": {"path": os.path.join(MODEL_DIR, "common", "a
 
 LOG_DIR = "./log"
 TEMP_DIR = "./temp"
+CKPT_DIR = "./ckpt"

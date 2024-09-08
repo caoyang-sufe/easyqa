@@ -10,9 +10,9 @@ from src.datasets.base import ExtractiveDataset
 
 class SquadDataset(ExtractiveDataset):
 	dataset_name = "SQuAD"
-	checked_data_dirs = ["./squad1.1/train-v1.1",
+	checked_data_dirs = ["./squad1.1/train-v1.1.json",
 						 "./squad1.1/dev-v1.1.json",
-						 "./squad2.0/train-v2.0",
+						 "./squad2.0/train-v2.0.json",
 						 ]
 	def __init__(self,
 				 data_dir,

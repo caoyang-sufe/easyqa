@@ -5,6 +5,7 @@
 import os
 import torch
 import logging
+
 from src.base import BaseClass
 
 class BaseDataset(BaseClass):
@@ -75,12 +76,14 @@ class ExtractiveDataset(BaseDataset):
 			for data in batch:
 				context = str()
 				for title, sentences in data["context"]:
-					context += title + '\n' + '\n'.join(sentences)
+					# context += title + '\n'
+					context += '\n'.join(sentences) + '\n'
 				contexts.append(context)
 				questions.append(data["question"])
-
-			model_inputs = tokenizer(contexts,
-									 questions,
+			# Note that here must be question_first, this is determined by `tokenizer.padding_side` ("right" or "left", default "right")
+			# See `QuestionAnsweringPipeline.preprocess` in ./site-packages/transformers/pipelines/question_answering.py for details
+			model_inputs = tokenizer(questions,
+									 contexts,
 									 add_special_tokens = True,
 									 max_length = max_length,
 									 padding = "max_length",
@@ -89,9 +92,6 @@ class ExtractiveDataset(BaseDataset):
 									 return_tensors = "pt",
 									 ) 	# Dict[input_ids: Tensor(batch_size, max_length),
 										#	   attention_mask: Tensor(batch_size, max_length)]
-			print(model_inputs["input_ids"].size())
-			print(model_inputs["attention_mask"].size())
-			input()
 		else:
 			raise NotImplementedError(model_name)
 		return model_inputs
