@@ -113,7 +113,7 @@ def test_yield_batch():
 	# _test_race()
 	# _test_dream()
 	# _test_squad()
-	# _test_hotpotqa()
+	_test_hotpotqa()
 	# _test_musique()
 	# _test_triviaqa()
 	terminate_logger(logger)
@@ -223,7 +223,7 @@ def test_pipeline():
 	print(outputs)
 
 if __name__ == "__main__":
-	# test_yield_batch()
+	test_yield_batch()
 	# test_generate_model_inputs()
-	test_inference_pipeline()
+	# test_inference_pipeline()
 	# test_pipeline()

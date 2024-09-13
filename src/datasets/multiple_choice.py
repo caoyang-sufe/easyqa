@@ -130,5 +130,3 @@ class DreamDataset(MultipleChoiceDataset):
 		if current_batch_size > 0:
 			self.check_batch_data_keys(batch)
 			yield batch
-
-

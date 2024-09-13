@@ -13,5 +13,11 @@ from transformers import (pipeline,
                           LongformerTokenizer,
                           LongformerForMultipleChoice,
                           )
-from src.pipelines.base import BasePipeline
+from src.pipelines.base import GenerativePipeline
 
+class ChatGLMPipeline(GenerativePipeline):
+
+	def __init__(self):
+		super(RacePipeline, self).__init__()
+
+	

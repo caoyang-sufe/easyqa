@@ -117,6 +117,7 @@ class GenerativeDataset(BaseDataset):
 							  model_name,
 							  **kwargs,
 							  ):
+		NotImplemented
 		model_inputs = None
 		return model_inputs			
 								  

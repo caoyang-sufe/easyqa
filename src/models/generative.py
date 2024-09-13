@@ -25,10 +25,16 @@ class ChatGLM(GenerativeModel):
 	def load_model(self):
 		self.model = AutoModel.from_pretrained(self.model_path, trust_remote_code=True).half().to(self.device)
 
+	def forward(self):
+		pass
+
+	def easy_pipeline(self)
+	
 	# @param data		: Dict[content(Str)]
 	# @return response	: Robot response
 	# @return history	: Chat history
 	def run(self, context, history = []):
+		
 		response, history = model.chat(tokenizer, context, history=[])
 		return response, history
 

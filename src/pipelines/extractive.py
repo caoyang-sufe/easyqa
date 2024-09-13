@@ -18,5 +18,11 @@ from src.pipelines.base import ExtractivePipeline
 
 class SquadPipeline(ExtractivePipeline):
 
-	def __init__(self, **kwargs):
+	def __init__(self):
 		super(SquadPipeline, self).__init__()
+
+
+class HotpotqaPipeline(ExtractivePipeline):
+
+	def __init__(self):
+		super(HotpotqaPipeline, self).__init__()

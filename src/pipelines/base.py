@@ -103,6 +103,37 @@ class GenerativePipeline(BasePipeline):
 	def __init__(self, **kwargs):
 		super(GenerativePipeline, self).__init__(**kwargs)
 
+	# Inference generator
+	# @param datasets_class_name: Str, CLASS name defined in `src.datasets`, e.g. "RaceDataset"
+	# @param models_class_name: Str, CLASS name defined in `src.models`, e.g. "RobertaLargeFinetunedRace"
+	# @param batch_size: Int, Input batch size
+	# @param dataset_kwargs: Dict, keyword arguments for `dataset.yield_batch` (except for `batch_size`)
+	# @param model_kwargs: Dict, keyword arguments for `model.generate_model_inputs`
+	def easy_inference_pipeline(self,
+								dataset_class_name,
+								model_class_name,
+								batch_size,
+								dataset_kwargs,
+								model_kwargs,
+								):
+		for model_outputs in super(GenerativePipeline, self).easy_inference_pipeline(
+			dataset_class_name,
+			model_class_name,
+			batch_size,
+			dataset_kwargs,
+			model_kwargs,
+		):
+			batch, (batch_logits, batch_predicts) = model_outputs
+			for data, logits, predict in zip(batch, batch_logits, batch_predicts):
+				print(data["article"])
+				print(data["question"])
+				print(data["options"])
+				print(data["answer"])
+				print(predict)
+				print("#" * 32)
+				input()
+
+
 class MultipleChoicePipeline(BasePipeline):
 	
 	def __init__(self, **kwargs):
