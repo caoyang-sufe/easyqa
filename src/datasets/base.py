@@ -21,6 +21,10 @@ class BaseDataset(BaseClass):
 	def generate_model_inputs(cls, batch, tokenizer, **kwargs):
 		raise NotImplementedError()
 
+	@classmethod
+	def apply_chat_template(cls, system_prompt, chat_prompt, **kwargs):
+		return system_prompt + "\n----" + chat_prompt
+
 	# Generator to yield batch data
 	def yield_batch(self, **kwargs):
 		raise NotImplementedError()
@@ -42,6 +46,7 @@ class BaseDataset(BaseClass):
 	def check_batch_data_keys(self, batch):
 		for key in self.batch_data_keys:
 			assert key in batch[0], f"{key} not found in yield batch"
+
 
 
 class ExtractiveDataset(BaseDataset):
@@ -66,9 +71,14 @@ class ExtractiveDataset(BaseDataset):
 							  model_name,
 							  **kwargs,
 							  ):
-		if model_name == "deepset/roberta-base-squad2":
+		model_groups_1 = ["deepset/roberta-base-squad2",
+						  "vish88/roberta-base-finetuned-hotpot_qa",
+						  "vish88/xlnet-base-cased-finetuned-hotpot_qa",
+						  ]
+		if model_name in model_groups_1:
 			# Unpack keyword arguments
 			max_length = kwargs.get("max_length", 512)
+			reserve_title = kwargs.get("reserve_title", True)
 			# Generate batch inputs
 			batch_inputs = list()
 			contexts = list()
@@ -76,7 +86,8 @@ class ExtractiveDataset(BaseDataset):
 			for data in batch:
 				context = str()
 				for title, sentences in data["context"]:
-					# context += title + '\n'
+					if reserve_title:
+						context += title + '\n'
 					context += '\n'.join(sentences) + '\n'
 				contexts.append(context)
 				questions.append(data["question"])
@@ -84,10 +95,10 @@ class ExtractiveDataset(BaseDataset):
 			# See `QuestionAnsweringPipeline.preprocess` in ./site-packages/transformers/pipelines/question_answering.py for details
 			model_inputs = tokenizer(questions,
 									 contexts,
-									 add_special_tokens = True,
 									 max_length = max_length,
 									 padding = "max_length",
 									 truncation = True,
+									 add_special_tokens = True,
 									 return_overflowing_tokens = False,
 									 return_tensors = "pt",
 									 ) 	# Dict[input_ids: Tensor(batch_size, max_length),
@@ -103,6 +114,8 @@ class GenerativeDataset(BaseDataset):
 					   "question",	# Str
 					   "answers",	# List[Str]
 					   ]
+	system_prompt = "You are a reader, you need to read the given context carefully and generate the answer to the question yourself."
+	chat_prompt_template = "Context:\n{context}\nQuestion: {question}"
 	def __init__(self, data_dir, **kwargs):
 		super(GenerativeDataset, self).__init__(data_dir, **kwargs)
 
@@ -117,10 +130,41 @@ class GenerativeDataset(BaseDataset):
 							  model_name,
 							  **kwargs,
 							  ):
+		# Chatglm series models
+		if model_name.startswith("THUDM/chatglm"):
+			# Unpack keyword arguments
+			max_length = kwargs.get("max_length", 512)
+			reserve_title = kwargs.get("reserve_title", True)
+			system_prompt = kwargs.get("system_prompt", self.system_prompt)
+			chat_prompt_template = kwargs.get("chat_prompt_template", self.chat_prompt_template)
+			# Generate batch inputs
+			batch_inputs = list()
+			prompts = list()
+			for data in batch:
+				context = str()
+				for i, (title, sentences) in enumerate(data["context"]):
+					context += "context 1:"
+					if reserve_title:
+						context += f" {title}"
+					context += '\n' + '\n'.join(sentences) + '\n'
+					context += '-' * 4 + '\n'
+					chat_prompt = chat_prompt_template.format(context = context, question = data["question"])
+				prompts.append(cls.apply_chat_template(system_prompt, chat_prompt))
+			# Note that here must be question_first, this is determined by `tokenizer.padding_side` ("right" or "left", default "right")
+			# See `QuestionAnsweringPipeline.preprocess` in ./site-packages/transformers/pipelines/question_answering.py for details
+			model_inputs = tokenizer(prompts,
+									 max_length = max_length,
+									 padding = "max_length",
+									 truncation = True,
+									 return_overflowing_tokens = False,
+									 return_tensors = "pt",
+									 ) 	# Dict[input_ids: Tensor(batch_size, max_length),
+										#	   attention_mask: Tensor(batch_size, max_length)]
 		NotImplemented
 		model_inputs = None
-		return model_inputs			
-								  
+		return model_inputs
+
+	
 
 class MultipleChoiceDataset(BaseDataset):
 	dataset_name = "Multiple-choice"

@@ -30,7 +30,7 @@ class BaseModel(BaseClass):
 		# Load model and tokenizer
 		self.load_tokenizer()
 		self.load_vocab()
-		self.load_model()
+		# self.load_model()
 
 	# Load tokenizer
 	def load_tokenizer(self):
@@ -54,6 +54,7 @@ class ExtractiveModel(BaseModel):
 	# @return batch_start_logits: FloatTensor(batch_size, max_length)
 	# @return batch_end_logits: FloatTensor(batch_size, max_length)
 	# @return batch_predicts: List[Str] with length batch_size
+	# Default for most extractive question-answering models
 	def forward(self, batch, **kwargs):
 		model_inputs = self.generate_model_inputs(batch, **kwargs)
 		for key in model_inputs:
@@ -116,12 +117,17 @@ class GenerativeModel(BaseModel):
 	# @return batch_start_logits: FloatTensor(batch_size, max_length)
 	# @return batch_end_logits: FloatTensor(batch_size, max_length)
 	# @return batch_predicts: List[Str] with length batch_size
+	# 2024/09/26 10:53:36 Default for Chatglm series only
 	def forward(self, batch, **kwargs):
 		model_inputs = self.generate_model_inputs(batch, **kwargs)
+		for key in model_inputs:
+			model_inputs[key] = model_inputs[key].to(self.device)
 		model_outputs = self.model(**model_inputs)
-		# TODO
-		
-		NotImplemented
+		batch_loss = model_outputs.loss	# Note: None in `model.eval()` settings
+		batch_logits = model_outputs.logits	# (batch_size, max_length, vocab_size)
+		batch_past_key_value = model_outputs.past_key_values	# List[Tuple(key: tensor, value: tensor)], the length of List is 28 usually
+		del model_inputs, model_outputs
+		return batch_loss, batch_logits, batch_past_key_value
 
 	# Generate model inputs
 	# @param batch: @yield in function `yield_batch` of Dataset object
@@ -133,6 +139,14 @@ class GenerativeModel(BaseModel):
 			**kwargs,
 		)
 
+	# Use ??? pipeline provided by transformers
+	# @param context: Str / List[Str] (batch)
+	# @param question: Str / List[Str] (batch)
+	def easy_pipeline(self, context, question):
+		# context = """Beyoncé Giselle Knowles-Carter (/biːˈjɒnseɪ/ bee-YON-say) (born September 4, 1981) is an American singer, songwriter, record producer and actress. Born and raised in Houston, Texas, she performed in various singing and dancing competitions as a child, and rose to fame in the late 1990s as lead singer of R&B girl-group Destiny\'s Child. Managed by her father, Mathew Knowles, the group became one of the world\'s best-selling girl groups of all time. Their hiatus saw the release of Beyoncé\'s debut album, Dangerously in Love (2003), which established her as a solo artist worldwide, earned five Grammy Awards and featured the Billboard Hot 100 number-one singles "Crazy in Love" and "Baby Boy"."""
+		# question = """When did Beyonce start becoming popular?"""
+		raise NotImplementedError()
+
 
 class MultipleChoiceModel(BaseModel):
 
@@ -142,6 +156,7 @@ class MultipleChoiceModel(BaseModel):
 	# @param data: Dict[article(List[Str]), question(List[Str]), options(List[List[Str]])]
 	# @return batch_logits: FloatTensor(batch_size, n_option)
 	# @return batch_predicts: List[Str] (batch_size, )
+	# Default for most multiple-choice question-answering models
 	def forward(self, batch, **kwargs):
 		model_inputs = self.generate_model_inputs(batch, **kwargs)
 		for key in model_inputs:

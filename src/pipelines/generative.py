@@ -15,7 +15,7 @@ from transformers import (pipeline,
                           )
 from src.pipelines.base import GenerativePipeline
 
-class ChatGLMPipeline(GenerativePipeline):
+class ChatglmPipeline(GenerativePipeline):
 
 	def __init__(self):
 		super(RacePipeline, self).__init__()

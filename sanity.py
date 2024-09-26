@@ -9,7 +9,7 @@ import torch
 from settings import DATA_DIR, LOG_DIR, MODEL_ROOT, DATA_SUMMARY, MODEL_SUMMARY
 
 from src.datasets import RaceDataset, DreamDataset, SquadDataset, HotpotqaDataset, MusiqueDataset, TriviaqaDataset
-from src.models import RobertaLargeFinetunedRace, LongformerLarge4096AnsweringRace, RobertaBaseSquad2
+from src.models import RobertaLargeFinetunedRace, LongformerLarge4096AnsweringRace, RobertaBaseSquad2, Chatglm6bInt4
 from src.pipelines import RacePipeline, DreamPipeline, SquadPipeline
 from src.tools.easy import initialize_logger, terminate_logger
 
@@ -172,11 +172,29 @@ def test_generate_model_inputs():
 			print('#' * 32)
 			if i > 5:
 				break
+
+	def _test_hotpotqa():
+		print(_test_hotpotqa.__name__)
+		data_dir = DATA_SUMMARY[HotpotqaDataset.dataset_name]["path"]
+		model_path = MODEL_SUMMARY[Chatglm6bInt4.model_name]["path"]
+		dataset = HotpotqaDataset(data_dir)
+		model = Chatglm6bInt4(model_path, device="cuda")
+
+		for i, batch in enumerate(dataset.yield_batch(batch_size=2, filename="dev_distractor_v1")):
+			model_inputs = HotpotqaDataset.generate_model_inputs(batch, model.tokenizer, model.model_name, max_length=512)
+			print(model_inputs)
+			print('-' * 32)
+			model_inputs = model.generate_model_inputs(batch, max_length=32)
+			print(model_inputs)
+			print('#' * 32)
+			if i > 5:
+				break		
 	
 	logger = initialize_logger(os.path.join(LOG_DIR, "sanity.log"), 'w')
 	# _test_race()
 	# _test_dream()
-	_test_squad()
+	# _test_squad()
+	_test_hotpotqa()
 	terminate_logger(logger)
 
 
@@ -223,7 +241,7 @@ def test_pipeline():
 	print(outputs)
 
 if __name__ == "__main__":
-	test_yield_batch()
-	# test_generate_model_inputs()
+	# test_yield_batch()
+	test_generate_model_inputs()
 	# test_inference_pipeline()
 	# test_pipeline()

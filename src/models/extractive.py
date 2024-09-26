@@ -19,16 +19,34 @@ class RobertaBaseSquad2(ExtractiveModel):
 		super(RobertaBaseSquad2, self).__init__(model_path, device)
 
 
-class RobertaBasePFHotpotQA(ExtractiveModel):
+class RobertaBaseFinetunedHotpotqa(ExtractiveModel):
+	# https://huggingface.co/vish88/roberta-base-finetuned-hotpot_qa
+	Tokenizer = AutoTokenizer
+	Model = AutoModelForQuestionAnswering
+	model_name = "vish88/roberta-base-finetuned-hotpot_qa"
+	def __init__(self, model_path, device="cpu"):
+		super(RobertaBaseFinetunedHotpotqa, self).__init__(model_path, device)	
+
+
+class XLNetBaseCasedFinetunedHotpotqa(ExtractiveModel):
+	# https://huggingface.co/vish88/xlnet-base-cased-finetuned-hotpot_qa
+	Tokenizer = AutoTokenizer
+	Model = AutoModelForQuestionAnswering
+	model_name = "vish88/xlnet-base-cased-finetuned-hotpot_qa"
+	def __init__(self, model_path, device="cpu"):
+		super(XLNetBaseCasedFinetunedHotpotqa, self).__init__(model_path, device)	
+	
+
+class RobertaBasePFHotpotqa(ExtractiveModel):
 	# Model: https://huggingface.co/roberta-base
 	# Adapter: https://huggingface.co/AdapterHub/roberta-base-pf-hotpotqa
 	Tokenizer = AutoTokenizer
 	Model = AutoModelForQuestionAnswering
 	model_name = "AdapterHub/roberta-base-pf-hotpotqa"
-	
+	adapter_name = "AdapterHub/roberta-base-pf-hotpotqa"
 	def __init__(self, model_path, adapter_path, device="cpu"):
 		super(RobertaBaseSquad2, self).__init__(model_path, device, adapter_path=adapter_path)
-		
+	
 	# 2024/09/13 17:34:56
 	# Note that `adapter-transformers` package is deprecated and is replaced by `adapters` package
 	# They are compatible with different version of `transformers` package

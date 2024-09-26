@@ -30,7 +30,6 @@ class BasePipeline(BaseClass):
 	def __init__(self, **kwargs):
 		super(BasePipeline, self).__init__(**kwargs)
 
-
 	# Inference generator
 	# @param datasets_class_name: Str, CLASS name defined in `src.datasets`, e.g. "RaceDataset"
 	# @param models_class_name: Str, CLASS name defined in `src.models`, e.g. "RobertaLargeFinetunedRace"

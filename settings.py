@@ -32,8 +32,11 @@ MODEL_SUMMARY = {"albert-base-v1": {"path": os.path.join(MODEL_DIR, "common", "a
 				 "roberta-large": {"path": os.path.join(MODEL_DIR, "common", "roberta-large")},
 				 "LIAMF-USP/roberta-large-finetuned-race": {"path": os.path.join(MODEL_DIR, "LIAMF-USP/roberta-large-finetuned-race")},
 				 "potsawee/longformer-large-4096-answering-race": {"path": os.path.join(MODEL_DIR, "potsawee/longformer-large-4096-answering-race")},
-				 "deepset/roberta-base-squad2": {"path": os.path.join(MODEL_DIR, "deepset/roberta-base-squad2")}, 
-				 "AdapterHub/roberta-base-pf-hotpotqa": {"path": os.path.join(MODEL_DIR, "AdapterHub/roberta-base-squad2")}, 
+				 "deepset/roberta-base-squad2": {"path": os.path.join(MODEL_DIR, "deepset/roberta-base-squad2")},
+				 "vish88/roberta-base-finetuned-hotpot_qa": {"path": os.path.join(MODEL_DIR, "vish88/roberta-base-finetuned-hotpot_qa")},
+				 "vish88/xlnet-base-cased-finetuned-hotpot_qa": {"path": os.path.join(MODEL_DIR, "vish88/xlnet-base-cased-finetuned-hotpot_qa")},
+				 "AdapterHub/roberta-base-pf-hotpotqa": {"path": os.path.join(MODEL_DIR, "AdapterHub/roberta-base-squad2")},
+				 "THUDM/chatglm-6b-int4": {"path": os.path.join(MODEL_DIR, "THUDM/chatglm-6b-int4")},
 				 }
 
 
