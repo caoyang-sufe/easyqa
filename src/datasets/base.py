@@ -135,8 +135,8 @@ class GenerativeDataset(BaseDataset):
 			# Unpack keyword arguments
 			max_length = kwargs.get("max_length", 512)
 			reserve_title = kwargs.get("reserve_title", True)
-			system_prompt = kwargs.get("system_prompt", self.system_prompt)
-			chat_prompt_template = kwargs.get("chat_prompt_template", self.chat_prompt_template)
+			system_prompt = kwargs.get("system_prompt", cls.system_prompt)
+			chat_prompt_template = kwargs.get("chat_prompt_template", cls.chat_prompt_template)
 			# Generate batch inputs
 			batch_inputs = list()
 			prompts = list()
@@ -160,11 +160,8 @@ class GenerativeDataset(BaseDataset):
 									 return_tensors = "pt",
 									 ) 	# Dict[input_ids: Tensor(batch_size, max_length),
 										#	   attention_mask: Tensor(batch_size, max_length)]
-		NotImplemented
-		model_inputs = None
 		return model_inputs
 
-	
 
 class MultipleChoiceDataset(BaseDataset):
 	dataset_name = "Multiple-choice"

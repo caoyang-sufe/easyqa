@@ -2,8 +2,11 @@
 # @author : caoyang
 # @email: caoyang@stu.sufe.edu.cn
 
-class BaseClass:
+import re
 
-    def __init__(self, **kwargs):
-        for key, word in kwargs.items():
-            self.__setattr__(key, word)
+class BaseClass:
+	regexes = {"forbidden_filename_char": re.compile(r"\\|/|:|\?|\*|\"|<|>|\|")}
+	
+	def __init__(self, **kwargs):
+		for key, word in kwargs.items():
+			self.__setattr__(key, word)

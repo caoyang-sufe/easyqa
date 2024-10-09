@@ -36,10 +36,13 @@ MODEL_SUMMARY = {"albert-base-v1": {"path": os.path.join(MODEL_DIR, "common", "a
 				 "vish88/roberta-base-finetuned-hotpot_qa": {"path": os.path.join(MODEL_DIR, "vish88/roberta-base-finetuned-hotpot_qa")},
 				 "vish88/xlnet-base-cased-finetuned-hotpot_qa": {"path": os.path.join(MODEL_DIR, "vish88/xlnet-base-cased-finetuned-hotpot_qa")},
 				 "AdapterHub/roberta-base-pf-hotpotqa": {"path": os.path.join(MODEL_DIR, "AdapterHub/roberta-base-squad2")},
-				 "THUDM/chatglm-6b-int4": {"path": os.path.join(MODEL_DIR, "THUDM/chatglm-6b-int4")},
+				 # 2024/10/02 19:02:27
+				 # Paths of chatglm-xxx must be split by backslash on Windows,
+				 # otherwise they could be recognized as model name other than path!
+				 # Here we use `os.path.join` for valid path
+				 "THUDM/chatglm-6b-int4": {"path": os.path.join(MODEL_DIR, "THUDM", "chatglm-6b-int4")},
+				 "THUDM/chatglm2-6b-int4": {"path": os.path.join(MODEL_DIR, "THUDM", "chatglm2-6b-int4")},
 				 }
-
-
 
 
 LOG_DIR = "./log"

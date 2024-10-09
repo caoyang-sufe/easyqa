@@ -25,21 +25,15 @@ class Chatglm(GenerativeModel):
 
 	def load_model(self):
 		self.model = AutoModel.from_pretrained(self.model_path, trust_remote_code=True).half().to(self.device)	
-	
-	# @param data		: Dict[content(Str)]
-	# @return response	: Robot response
-	# @return history	: Chat history
-	def run(self, context, history = []):
-		response, history = model.chat(tokenizer, context, history=[])
-		return response, history
-
-	# @param
-	def generate_model_inputs(self):
-		pass
 
 
 class Chatglm6bInt4(Chatglm):
 	model_name = "THUDM/chatglm-6b-int4"
+	def __init__(self, model_path, device="cuda"):
+		super(Chatglm6bInt4, self).__init__(model_path, device)
+
+class Chatglm26bInt4(Chatglm):
+	model_name = "THUDM/chatglm2-6b-int4"
 	def __init__(self, model_path, device="cuda"):
 		super(Chatglm6bInt4, self).__init__(model_path, device)
 

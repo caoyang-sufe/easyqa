@@ -30,12 +30,16 @@ class BasePipeline(BaseClass):
 	def __init__(self, **kwargs):
 		super(BasePipeline, self).__init__(**kwargs)
 
-	# Inference generator
+	# Inference data generator
 	# @param datasets_class_name: Str, CLASS name defined in `src.datasets`, e.g. "RaceDataset"
 	# @param models_class_name: Str, CLASS name defined in `src.models`, e.g. "RobertaLargeFinetunedRace"
 	# @param batch_size: Int, Input batch size
 	# @param dataset_kwargs: Dict, keyword arguments for `dataset.yield_batch` (except for `batch_size`)
 	# @param model_kwargs: Dict, keyword arguments for `model.generate_model_inputs`
+	# @yield batch: List of batch data
+	# @yield model_outputs: See `.forward` method in model class
+	# * This is a generator for subclass to call!
+	# * `easy_inference_pipeline` in subclass may not be a generator!
 	def easy_inference_pipeline(self,
 								dataset_class_name,
 								model_class_name,
@@ -50,6 +54,11 @@ class BasePipeline(BaseClass):
 		for i, batch in enumerate(dataset.yield_batch(batch_size, **dataset_kwargs)):
 			yield batch, model.forward(batch, **model_kwargs)
 
+	# @param datasets_class_name: Str, CLASS name defined in `src.datasets`, e.g. "RaceDataset"
+	# @param models_class_name: Str, CLASS name defined in `src.models`, e.g. "RobertaLargeFinetunedRace"
+	# @param batch_size: Int, Input batch size
+	# @param dataset_kwargs: Dict, keyword arguments for `dataset.yield_batch` (except for `batch_size`)
+	# @param model_kwargs: Dict, keyword arguments for `model.generate_model_inputs`
 	def easy_finetune_pipeline(self,
 							   dataset_class_name,
 							   model_class_name,
@@ -64,47 +73,51 @@ class ExtractivePipeline(BasePipeline):
 	def __init__(self, **kwargs):
 		super(ExtractivePipeline, self).__init__(**kwargs)
 
-	# Inference generator
-	# @param datasets_class_name: Str, CLASS name defined in `src.datasets`, e.g. "RaceDataset"
-	# @param models_class_name: Str, CLASS name defined in `src.models`, e.g. "RobertaLargeFinetunedRace"
+	# Inference pipeline
+	# @param datasets_class_name: Str, CLASS name defined in `src.datasets`, e.g. "SquadDataset"
+	# @param models_class_name: Str, CLASS name defined in `src.models`, e.g. "RobertaBaseSquad2"
 	# @param batch_size: Int, Input batch size
 	# @param dataset_kwargs: Dict, keyword arguments for `dataset.yield_batch` (except for `batch_size`)
 	# @param model_kwargs: Dict, keyword arguments for `model.generate_model_inputs`
+	# @yield yield_data
 	def easy_inference_pipeline(self,
 								dataset_class_name,
 								model_class_name,
 								batch_size,
 								dataset_kwargs,
 								model_kwargs,
+								save_path,
 								):
 		for model_outputs in super(ExtractivePipeline, self).easy_inference_pipeline(
-			dataset_class_name,
-			model_class_name,
-			batch_size,
-			dataset_kwargs,
-			model_kwargs,
+			dataset_class_name, model_class_name,
+			batch_size, dataset_kwargs, model_kwargs,
 		):
 			batch, (batch_start_logits, batch_end_logits, batch_predicts, batch_input_tokens) = model_outputs
-			for data, start_logits, end_logits, predict, input_tokens in zip(batch, batch_start_logits, batch_end_logits, batch_predicts, batch_input_tokens):
-				print(list(filter(lambda _token: _token != "<pad>", input_tokens)))
-				print(data["context"])
-				print(data["question"])
-				print(data["answers"])
-				print(predict)
-				# print(start_logits, start_logits.size())
-				# print(end_logits, end_logits.size())
-				print("#" * 32)
-				input()
-				
+			inference_data = list()	# List[Dict]
+			for data, start_logits, end_logits, predict, input_tokens in zip(
+				batch, batch_start_logits, batch_end_logits,
+				batch_predicts, batch_input_tokens,
+			):
+				inference_data.append({
+					"context": data["context"],	# Str
+					"question": data["question"],	# Str
+					"answers": data["answers"],	# List[Str]
+					"start_logits": start_logits,	# Tensor(max_length, )
+					"end_logits": end_logits,	# Tensor(max_length, )
+					"predict": predict,	# List[Tuple(Int, Str)]
+					"input_tokens": input_tokens,	# List[Str]
+				})
+			yield inference_data
+
 
 class GenerativePipeline(BasePipeline):
 	
 	def __init__(self, **kwargs):
 		super(GenerativePipeline, self).__init__(**kwargs)
 
-	# Inference generator
-	# @param datasets_class_name: Str, CLASS name defined in `src.datasets`, e.g. "RaceDataset"
-	# @param models_class_name: Str, CLASS name defined in `src.models`, e.g. "RobertaLargeFinetunedRace"
+	# Inference pipeline
+	# @param datasets_class_name: Str, CLASS name defined in `src.datasets`, e.g. "HotpotQADataset"
+	# @param models_class_name: Str, CLASS name defined in `src.models`, e.g. "Chatglm6bInt4"
 	# @param batch_size: Int, Input batch size
 	# @param dataset_kwargs: Dict, keyword arguments for `dataset.yield_batch` (except for `batch_size`)
 	# @param model_kwargs: Dict, keyword arguments for `model.generate_model_inputs`
@@ -116,11 +129,8 @@ class GenerativePipeline(BasePipeline):
 								model_kwargs,
 								):
 		for model_outputs in super(GenerativePipeline, self).easy_inference_pipeline(
-			dataset_class_name,
-			model_class_name,
-			batch_size,
-			dataset_kwargs,
-			model_kwargs,
+			dataset_class_name, model_class_name,
+			batch_size, dataset_kwargs, model_kwargs,
 		):
 			batch, (batch_logits, batch_predicts) = model_outputs
 			for data, logits, predict in zip(batch, batch_logits, batch_predicts):
@@ -139,7 +149,7 @@ class MultipleChoicePipeline(BasePipeline):
 		super(MultipleChoicePipeline, self).__init__(**kwargs)
 
 
-	# Inference generator
+	# Inference pipeline
 	# @param datasets_class_name: Str, CLASS name defined in `src.datasets`, e.g. "RaceDataset"
 	# @param models_class_name: Str, CLASS name defined in `src.models`, e.g. "RobertaLargeFinetunedRace"
 	# @param batch_size: Int, Input batch size
@@ -169,4 +179,3 @@ class MultipleChoicePipeline(BasePipeline):
 				print("#" * 32)
 				input()
 				
-

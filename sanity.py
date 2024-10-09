@@ -180,7 +180,7 @@ def test_generate_model_inputs():
 		dataset = HotpotqaDataset(data_dir)
 		model = Chatglm6bInt4(model_path, device="cuda")
 
-		for i, batch in enumerate(dataset.yield_batch(batch_size=2, filename="dev_distractor_v1")):
+		for i, batch in enumerate(dataset.yield_batch(batch_size=2, filename="dev_distractor_v1.json")):
 			model_inputs = HotpotqaDataset.generate_model_inputs(batch, model.tokenizer, model.model_name, max_length=512)
 			print(model_inputs)
 			print('-' * 32)

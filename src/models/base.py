@@ -53,7 +53,8 @@ class ExtractiveModel(BaseModel):
 	# @param batch: @yield in function `yield_batch` of Dataset object
 	# @return batch_start_logits: FloatTensor(batch_size, max_length)
 	# @return batch_end_logits: FloatTensor(batch_size, max_length)
-	# @return batch_predicts: List[Str] with length batch_size
+	# @return batch_predicts: List[List[Tuple(Int, Str)] with length batch_size
+	# @return batch_input_tokens: List[List[Str]] with length batch_size, 
 	# Default for most extractive question-answering models
 	def forward(self, batch, **kwargs):
 		model_inputs = self.generate_model_inputs(batch, **kwargs)

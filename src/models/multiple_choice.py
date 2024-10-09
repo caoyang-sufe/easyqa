@@ -29,4 +29,3 @@ class LongformerLarge4096AnsweringRace(MultipleChoiceModel):
 
 	def __init__(self, model_path, device="cpu"):
 		super(LongformerLarge4096AnsweringRace, self).__init__(model_path, device)
-

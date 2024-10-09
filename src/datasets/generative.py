@@ -30,12 +30,14 @@ class HotpotqaDataset(GenerativeDataset):
 	# - question_id: Str, e.g. "5adf9ba1554299025d62a2db"
 	# - supporting_facts: List[Tuple[Title(Str), SentNo(Int)]], e.g.  [['2014 S/S', 0], ['Winner (band)', 0]] (Nonexisted in test data)
 	# - type: Str, e.g. "comparison" (Nonexisted in test data)
-	# - level: Str, e.g. "hard" (Nonexisted in test data)
+	# - level: Str, e.g. "hard", "medium" (Nonexisted in test data)
 	def yield_batch(self,
 					batch_size,
 					filename,
 					):
 		batch, current_batch_size, = list(), 0
+		if not filename.startswith("hotpot_"):
+			filename = f"hotpot_{filename}"
 		with open(os.path.join(self.data_dir, filename), 'r', encoding="utf8") as f:
 			data = json.load(f)
 		for datum in data:
@@ -209,18 +211,26 @@ class TriviaqaDataset(GenerativeDataset):
 			normalized_entry = self._normalize_entry(entry)
 			# Generate context by EntityPages
 			context = list()
-			entity_title = normalized_entry["entity_title"]
-			entity_filename = normalized_entry["entity_filename"]
-			for title, filename in zip(entity_title, entity_filename):
-				file_path = os.path.join(self.data_dir, f"./evidence/{category}", filename)
-				with open(file_path, 'r', encoding="utf8") as f:
-					article = list(filter(None, f.read().splitlines()))
-				context.append([title, article])
-			answers = normalized_entry["answer_normalized_aliases"][:]	# Simply use `answer_normalized_aliases`
+			entity_title = normalized_entry.get("entity_pages_title")
+			entity_filename = normalized_entry.get("entity_pages_filename")
+			if entity_title is None or entity_filename is None:
+				logging.warning("No entity pages inspected!")
+			else:
+				for title, filename in zip(entity_title, entity_filename):
+					normalized_filename = self.regexes["forbidden_filename_char"].sub(str(), filename)
+					file_path = os.path.join(self.data_dir, f"./evidence/wikipedia", filename)
+					with open(file_path, 'r', encoding="utf8") as f:
+						article = list(filter(None, f.read().splitlines()))
+					context.append([title, article])
+
+			# Simply use `answer_normalized_aliases` as labels
+			# Note that test data has no answer while others
+			answers = list() if type_ == "test" else normalized_entry["answer_normalized_aliases"][:]
 			batch.append({"context": context,
 						  "question": normalized_entry["question"],
 						  "answers": answers,
 						  })
+			
 			current_batch_size += 1
 			if current_batch_size == batch_size:
 				# self.check_batch_data_keys(batch)
@@ -244,7 +254,7 @@ class TriviaqaDataset(GenerativeDataset):
 		search_results = entry.get("SearchResults")
 		question_part_of_verified_eval = entry.get("QuestionPartOfVerifiedEval")
 		question_verified_eval_attempt = entry.get("QuestionVerifiedEvalAttempt")
-		# Normalize the different dictationary
+		# Normalize the different dictionary
 		answer_dict = self._normalize_dict_data(data=answer, prefix="answer")	# Normalize Answer
 		entity_pages_dict = self._normalize_list_of_dicts_data(data=entity_pages, prefix="entity_pages")	# Normalize EntityPages
 		search_results_dict = self._normalize_list_of_dicts_data(data=search_results, prefix="search_results")	# Normalize SearchResults
@@ -264,7 +274,6 @@ class TriviaqaDataset(GenerativeDataset):
 		normalized_dict = dict()
 		if data is not None:
 			for key, value in data.items():
-				print(key, value)
 				normalized_key = f"{prefix}_{self._transform_camel_to_underscore(key)}"
 				normalized_dict[normalized_key] = value
 		return normalized_dict
@@ -272,7 +281,7 @@ class TriviaqaDataset(GenerativeDataset):
 	# Normalize List[Dict]-like data, e.g. EntityPages and SearchResults
 	# @param data: List[Dict]-like variable
 	# @param prefix: Normalize key name by adding prefix, i.e. "entity_pages" for EntityPages and "search_results" for SearchResults
-	# @return normalized_dict: Dict[List[Obj]]
+	# @return normalized_dict: Dict[key: List[Obj]]
 	def _normalize_list_of_dicts_data(self, data, prefix):
 		normalized_dict = dict()
 		if data is not None:
@@ -286,7 +295,7 @@ class TriviaqaDataset(GenerativeDataset):
 						normalized_dict[normalized_key] = [None] * i + [value]
 						logging.warning(f"New key occurs: {normalized_key}")
 		return normalized_dict
-
+	
 	# Transform UpperCamelCase string to lower_case_with_underscores
 	# @param string: String in UpperCamelCase format, e.g. QuestionPartOfVerifiedEval
 	# @return: String in lower_case_with_underscores format, e.g. question_part_of_verified_eval

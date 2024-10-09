@@ -4,5 +4,6 @@
 data/
 log/
 temp/
+jupyter/
 __pycache__
 venv/
