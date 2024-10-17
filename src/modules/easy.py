@@ -3,9 +3,37 @@
 # @email: caoyang@163.sufe.edu.cn
 # Commonly used module
 
+import os
 import torch
 from torch.autograd import Variable
 from torch.nn import Module, LSTM, Dropout, functional as F
+from transformers import (AutoTokenizer, AutoModel, AlbertTokenizer,
+						  AlbertModel, AlbertConfig, BertTokenizer,
+						  BertModel, BertConfig, RobertaTokenizer,
+						  RobertaModel, RobertaConfig,
+						  )
+
+from settings import MODEL_SUMMARY
+
+
+# @param model_path: Str, huggingface_model_path
+# @param Model: <class>, e.g. BertModel
+# @param Config: <class>, e.g. BertConfig
+# @param config_kwargs: Dict, Keyword arguments of Config
+# @param device: Str, e.g. "cpu" or "cuda"
+def load_model(model_path,
+			   Model = AutoModel,
+			   Config = None,
+			   config_kwargs = None,
+			   device = "cpu",
+			   ):
+	if Config is not None:
+		config = Config(**config_kwargs)
+		model = Model.from_pretrained(model_path, config=config)
+	else:
+		model = Model.from_pretrained(model_path)
+	return model.to(device)
+
 
 # @param x			: (size_1, size_2, ... , size_n)
 # @param x_shape	: (size_1, )

@@ -9,7 +9,7 @@ from copy import deepcopy
 
 class BaseConfig:
 	parser = argparse.ArgumentParser('--')
-	parser.add_argument("--device", default="cuda", type=str, help="Device to run on")
+	parser.add_argument("--device", default="cpu", type=str, help="Device to run on")
 
 	# Default config
 	parser.add_argument('--default_pretrained_model', default='albert-base-v1', type=str, help='Default pretrained model, see setting.PRETRAINED_MODEL_SUMMARY for details.')
@@ -40,20 +40,16 @@ class BaseConfig:
 	parser.add_argument('--use_pretrained_model', default=True, type=bool, help='Whether to use pretrained model.')
 	parser.add_argument('--load_pretrained_model_in_module', default=False, type=bool, help='Define pretrained model in module or just pass it as a argument.')
 	parser.add_argument('--pretrained_model_device', default='cpu', type=str, help='You can run pretrained model on cpu for usually it is very large.')
-	
-class DatasetConfig:
-	parser = deepcopy(BaseConfig.parser)
-	# Params of torch.utils.data.DataLoader
-	parser.add_argument('--train_batch_size', default=32, type=int, help='The size of training batch')
-	parser.add_argument('--dev_batch_size', default=32, type=int, help='The size of developping batch')
-	parser.add_argument('--test_batch_size', default=32, type=int, help='The size of testing batch')
-	parser.add_argument('--dataloader_num_workers', default=0, type=int, help='@param num_workers of torch.utils.data.DataLoader')
 
-	# Tokenization
-	parser.add_argument('--do_sentence_tokenization_for_article', default=True, type=bool, help='Whether to tokenize question by sentence.')
-	parser.add_argument('--do_paragraph_tokenization_for_article', default=False, type=bool, help='Whether to tokenize article by paragraph. If False, then all sentences in article is combined as together.')
-	parser.add_argument('--do_sentence_tokenization_for_question', default=False, type=bool, help='Whether to tokenize question by sentence.')
-	parser.add_argument('--do_sentence_tokenization_for_option', default=False, type=bool, help='Whether to tokenize option by sentence.')
+
+class EasyTrainConfig:
+	parser = deepcopy(BaseConfig.parser)
+	parser.add_argument("--lr", default=0.01, type=float, help="Learning rate")
+	parser.add_argument("--wd", default=0.9, type=float, help="Weight decay")
+	parser.add_argument("--lrs", default=0.9, type=float, help="Step size of learning rate scheduler")
+	parser.add_argument("--lrm", default=0.9, type=float, help="Learning rate multiplier")
+	parser.add_argument("--ep", default=32, type=float, help="Train epochs")
+
 
 class ModuleConfig:
 	parser = deepcopy(BaseConfig.parser)
@@ -89,11 +85,3 @@ class ModuleConfig:
 	parser.add_argument('--hrca_mha_dropout_rate', default=0., type=float, help='The dropout rate in HRCA MultiHeadAttention module.')
 	parser.add_argument('--hrca_plus', default=False, type=bool, help='Whether to use HRCA+ forward propagation, HRCA+ differ from HRCA in how many attention used in POQ matrix, where HRCA+ uses 9 while HRCA uses 3.')
 
-
-class EasytrainConfig:
-	parser = deepcopy(BaseConfig.parser)
-	parser.add_argument("--lr", default=0.01, type=float, help="Learning rate")
-	parser.add_argument("--wd", default=0.9, type=float, help="Weight decay")
-	parser.add_argument("--lrs", default=0.9, type=float, help="Step size of learning rate scheduler")
-	parser.add_argument("--lrm", default=0.9, type=float, help="Learning rate multiplier")
-	parser.add_argument("--ep", default=32, type=float, help="Train epochs")

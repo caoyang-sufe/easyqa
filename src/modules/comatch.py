@@ -6,7 +6,7 @@
 import torch
 from torch.nn import Module, Linear, LSTM, Dropout, NLLLoss, functional as F
 
-from src.modules.easy_module import MaskedLSTM
+from src.modules.easy import MaskedLSTM
 
 
 class CoMatchBranch(Module):

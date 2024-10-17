@@ -6,8 +6,10 @@
 import torch
 from torch.nn import Module, Linear, NLLLoss, functional as F
 
-from src.tool.pretrained_model_tool import load_transformer_model
-from src.modules.attention_module import MultiHeadAttention
+from src.modules.easy import load_model
+from src.modules.attention import MultiHeadAttention
+
+from settings import MODEL_SUMMARY
 
 class DUMA(Module):
 	"""Forward propagation algorithm of DCMN+
@@ -36,13 +38,13 @@ class DUMA(Module):
 	>>> P_size = (args.train_batch_size, args.max_article_token)
 	>>> Q_size = (args.train_batch_size, args.max_question_token)
 	>>> A_size = (args.train_batch_size * N_CHOICES, args.max_option_token)
-	>>> test_input = {"P"	: {"input_ids"		: (torch.randn(*P_size).abs() * 10).long(),
+	>>> test_input = {'P'	: {"input_ids"		: (torch.randn(*P_size).abs() * 10).long(),
 							   "token_type_ids"	: torch.zeros(*P_size).long(),
 						   	   "attention_mask"	: torch.ones(*P_size).long()},
-					  "Q"	: {"input_ids"		: (torch.randn(*Q_size).abs() * 10).long(),
+					  'Q'	: {"input_ids"		: (torch.randn(*Q_size).abs() * 10).long(),
 						   	   "token_type_ids"	: torch.zeros(*Q_size).long(),
 						   	   "attention_mask"	: torch.ones(*Q_size).long()},
-					  "A"	: {"input_ids"		: (torch.randn(*A_size).abs() * 10).long(),
+					  'A'	: {"input_ids"		: (torch.randn(*A_size).abs() * 10).long(),
 						   	   "token_type_ids"	: torch.zeros(*A_size).long(),
 						   	   "attention_mask"	: torch.ones(*A_size).long()},
 					  }
@@ -70,7 +72,10 @@ class DUMA(Module):
 		else:
 			self.W = Linear(self.l, 1, bias=False)
 		if args.load_pretrained_model_in_module:
-			self.pretrained_model = load_transformer_model(model_name=args.duma_pretrained_model, device=args.pretrained_model_device)
+			self.pretrained_model = load_model(
+				model_path = MODEL_SUMMARY[args.duma_pretrained_model]["path"],
+				device = args.pretrained_model_device,
+			)
 			self.pretrained_model.eval()
 		else:
 			self.pretrained_model = None
