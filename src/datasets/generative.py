@@ -222,10 +222,12 @@ class TriviaqaDataset(GenerativeDataset):
 					with open(file_path, 'r', encoding="utf8") as f:
 						article = list(filter(None, f.read().splitlines()))
 					context.append([title, article])
-
+			# 2024/10/09 19:23:01
 			# Simply use `answer_normalized_aliases` as labels
 			# Note that test data has no answer while others
 			answers = list() if type_ == "test" else normalized_entry["answer_normalized_aliases"][:]
+			# 2024/10/09 19:23:01
+			# Currently output `context`, `question`, `answers` only
 			batch.append({"context": context,
 						  "question": normalized_entry["question"],
 						  "answers": answers,
@@ -295,7 +297,7 @@ class TriviaqaDataset(GenerativeDataset):
 						normalized_dict[normalized_key] = [None] * i + [value]
 						logging.warning(f"New key occurs: {normalized_key}")
 		return normalized_dict
-	
+
 	# Transform UpperCamelCase string to lower_case_with_underscores
 	# @param string: String in UpperCamelCase format, e.g. QuestionPartOfVerifiedEval
 	# @return: String in lower_case_with_underscores format, e.g. question_part_of_verified_eval

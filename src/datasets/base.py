@@ -162,7 +162,6 @@ class GenerativeDataset(BaseDataset):
 										#	   attention_mask: Tensor(batch_size, max_length)]
 		return model_inputs
 
-
 class MultipleChoiceDataset(BaseDataset):
 	dataset_name = "Multiple-choice"
 	batch_data_keys = ["article",	# Str, usually

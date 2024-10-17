@@ -6,6 +6,7 @@ import os
 import platform
 
 SYSTEM = platform.system()
+
 DATA_ROOT = {"Windows": r"D:\resource\data",
 			 "Linux": "/nfsshare/home/caoyang/code/data",
 			 }

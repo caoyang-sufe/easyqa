@@ -128,21 +128,8 @@ class GenerativePipeline(BasePipeline):
 								dataset_kwargs,
 								model_kwargs,
 								):
-		for model_outputs in super(GenerativePipeline, self).easy_inference_pipeline(
-			dataset_class_name, model_class_name,
-			batch_size, dataset_kwargs, model_kwargs,
-		):
-			batch, (batch_logits, batch_predicts) = model_outputs
-			for data, logits, predict in zip(batch, batch_logits, batch_predicts):
-				print(data["article"])
-				print(data["question"])
-				print(data["options"])
-				print(data["answer"])
-				print(predict)
-				print("#" * 32)
-				input()
-
-
+		NotImplemented
+		
 class MultipleChoicePipeline(BasePipeline):
 	
 	def __init__(self, **kwargs):

@@ -26,7 +26,6 @@ class Chatglm(GenerativeModel):
 	def load_model(self):
 		self.model = AutoModel.from_pretrained(self.model_path, trust_remote_code=True).half().to(self.device)	
 
-
 class Chatglm6bInt4(Chatglm):
 	model_name = "THUDM/chatglm-6b-int4"
 	def __init__(self, model_path, device="cuda"):
@@ -37,4 +36,3 @@ class Chatglm26bInt4(Chatglm):
 	def __init__(self, model_path, device="cuda"):
 		super(Chatglm6bInt4, self).__init__(model_path, device)
 
-	
