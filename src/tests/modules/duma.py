@@ -29,7 +29,6 @@ def testscript():
 			  "duma_pretrained_model"			: "albert-base-v1",
 			  "duma_encoding_size"				: 768,
 			  }
-			  
 	update_args(args, **kwargs)
 	# Generate a small input for quick test
 	P_size = (args.train_batch_size, args.max_article_token)
